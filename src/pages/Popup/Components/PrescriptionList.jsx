@@ -23,7 +23,7 @@ class PrescriptionList extends React.Component {
                                         return (
                                             <li key={medicineIndex}>
                                                 <span class="medicine-name">${prescription_medicine.attributes.name} </span>
-                                                <span>${prescription_medicine.attributes.instructions}</span>
+                                                <span>{prescription_medicine.attributes.instructions}</span>
                                             </li>
                                         )
                                     }

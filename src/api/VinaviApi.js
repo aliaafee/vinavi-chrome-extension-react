@@ -104,7 +104,7 @@ async function getActiveTab() {
     return tab;
 }
 
-async function getCases(page = 1) {
+async function getCases(patientId, page = 1) {
     const activeTab = await getActiveTab();
 
     try {
@@ -112,11 +112,35 @@ async function getCases(page = 1) {
             activeTab.id,
             {
                 "action": "getCases",
+                "patientId": patientId,
                 "page": page
             }
         ));
     } catch (error) {
         return null
+    }
+}
+
+async function getAllCases(patientId, page = 1) {
+    const cases = await getCases(patientId, page);
+
+    if (cases.meta.last_page > cases.meta.current_page) {
+        const moreCases = await getAllCases(patientId, page + 1);
+        return {
+            data: cases.data.concat(moreCases.data),
+            meta: {
+                current_page: 1,
+                last_page: 1
+            }
+        }
+    }
+
+    return {
+        data: cases.data,
+        meta: {
+            current_page: 1,
+            last_page: 1
+        }
     }
 }
 
@@ -151,6 +175,7 @@ async function getPatient() {
 }
 
 export default {
+    getAllCases: getAllCases,
     getCases: getCases,
     getEpisodeDetail: getEpisodeDetail,
     getPatient: getPatient

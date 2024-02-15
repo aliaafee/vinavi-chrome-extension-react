@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Chrome Extension React Webpack Full Description",
   "scripts": {
-    "start": "node scripts/webserver.js",
+    "dev": "node scripts/devserver.js",
     "build": "webpack"
   },
   "keywords": [],

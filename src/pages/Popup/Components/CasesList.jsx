@@ -10,6 +10,11 @@ class CasesListComponent extends React.Component {
                 <div>Not Found</div>
             )
         }
+        if (this.props.cases === 'failed') {
+            return (
+                <div>Failed to load</div>
+            )
+        }
         if (!('data' in this.props.cases)) {
             return (
                 <div>Loading..</div>
@@ -28,7 +33,10 @@ class CasesListComponent extends React.Component {
                             <div>
                                 <ul className='episodes'>
                                     {caseItem.relationships.episodes.data.map((episode, episodeIndex) => (
-                                        <li key={episodeIndex} onClick={() => this.props.onEpisodeSelected(episode)}>
+                                        <li
+                                            key={episodeIndex}
+                                            onClick={() => this.props.onEpisodeSelected(episode)}
+                                            className={this.props.selectedEpisodeId === episode.id ? "selected" : ""}>
                                             <span>episode</span>
                                             <span>{episode.attributes.created_at}</span>
                                             <span>{episode.relationships.doctor.data.attributes.fullname}</span>

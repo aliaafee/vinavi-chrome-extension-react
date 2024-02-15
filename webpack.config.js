@@ -1,7 +1,6 @@
 const path = require("path");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 module.exports = {
     mode: 'production',
@@ -26,14 +25,12 @@ module.exports = {
                 use: {
                     loader: "babel-loader",
                     options: {
-                        presets: ["@babel/preset-env", "@babel/preset-react"],
+                        presets: ["@babel/preset-env", "@babel/preset-react"]
                     }
                 }
             },
             {
-                // look for .css or .scss files
                 test: /\.(css|scss)$/,
-                // in the `src` directory
                 use: [
                     {
                         loader: 'style-loader',
@@ -43,9 +40,6 @@ module.exports = {
                     },
                     {
                         loader: 'sass-loader',
-                        options: {
-                            sourceMap: true,
-                        },
                     },
                 ],
             }
@@ -55,9 +49,6 @@ module.exports = {
         extensions: ['', '.js', '.jsx'],
     },
     plugins: [
-        new CleanWebpackPlugin({
-            verbose: false
-        }),
         new CopyWebpackPlugin({
             patterns: [
                 {
@@ -65,7 +56,6 @@ module.exports = {
                     to: path.join(__dirname, 'build'),
                     force: true,
                     transform: function (content, path) {
-                        // generates the manifest file using the package.json informations
                         return Buffer.from(
                             JSON.stringify({
                                 version: process.env.npm_package_version,
@@ -108,11 +98,6 @@ module.exports = {
                     from: "src/images/icon128.png",
                     to: path.join(__dirname, 'build', 'images'),
                     force: true
-                },
-                {
-                    from: "src/images/external-link.svg",
-                    to: path.join(__dirname, 'build', 'images'),
-                    force: true
                 }
             ]
         }),
@@ -122,8 +107,5 @@ module.exports = {
             chunks: ['popup'],
             cache: false,
         })
-    ],
-    performance: {
-        hints: false
-    }
+    ]
 };

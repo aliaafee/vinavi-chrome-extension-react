@@ -9,11 +9,18 @@ import PrescriptionList from './PrescriptionList';
 class EpisodeDetailComponent extends React.Component {
 
     render() {
-        console.log("selected episode", this.props.selectedEpisode);
         if (this.props.episode === null) {
             return (
                 <div id="detail">
                     <div id="logo"></div>
+                </div>
+            )
+        }
+
+        if (this.props.episode === 'loading') {
+            return (
+                <div id="loading">
+                    <span class="spinner"><span></span></span>
                 </div>
             )
         }

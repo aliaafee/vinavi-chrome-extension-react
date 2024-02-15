@@ -61,36 +61,7 @@ ul.episode-info li>span:nth-child(2) {
 
 
 
-ul.prescription-list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    display: grid;
-    grid-gap: 10px;
-}
 
-ul.prescription-list>li {
-    background-color: lightgray;
-    border-radius: 5px;
-    padding: 5px;
-}
-
-ul.prescription-list>li>div>span:nth-child(1) {
-    font-size: smaller;
-    font-variant: small-caps;
-}
-
-ul.prescription-list>li>div>span:nth-child(2) {
-    font-weight: bold;
-}
-
-ul.prescription-list>li>ol {
-    padding-left: 20px;
-}
-
-ul.prescription-list>li>ol>li>span.medicine-name {
-    font-weight: bold;
-}
 
 a.view-source {
     cursor: pointer;
