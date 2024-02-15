@@ -1,0 +1,73 @@
+#list {
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: lightgray;
+}
+
+#list>ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+#list>ul>li:nth-child(odd) {
+    background-color: silver;
+}
+
+#list>ul>li:nth-child(even) {
+    background-color: lightgray;
+}
+
+#list>ul>li>div:first-child {
+    display: none;
+}
+
+#list>ul>li>div>ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#list>ul>li>div>ul>li,
+#list>ul>li.load-more,
+#list>ul>li.failed-load {
+    padding: 2px;
+    cursor: pointer;
+}
+
+#list>ul>li.load-more {
+    text-align: center;
+}
+
+#list>ul>li.failed-load {
+    color: red;
+}
+
+#list>ul>li>div>ul>li:hover,
+#list>ul>li.load-more:hover {
+    background-color: grey;
+}
+
+#list>ul>li>div>ul>li.selected {
+    background-color: #f38181;
+}
+
+#list>ul>li>div>ul>li>span {
+    display: block;
+}
+
+#list>ul>li>div>ul>li>span:nth-child(1) {
+    display: none;
+}
+
+#list>ul>li>div>ul>li>span:nth-child(2) {
+    font-size: small;
+}
+
+#list>ul>li>div>ul>li>span:nth-child(3) {
+    font-weight: bold;
+}
+
+#list>ul>li>div>ul>li>span:nth-child(3)::before {
+    content: "Dr. ";
+}

@@ -1,0 +1,26 @@
+ul.notes-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-gap: 10px;
+}
+
+ul.notes-list>li {
+    background-color: lightgray;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+ul.notes-list>li>span {
+    display: block;
+}
+
+ul.notes-list>li>span:first-child {
+    font-size: smaller;
+    font-variant: small-caps;
+}
+
+ul.notes-list>li>span:nth-child(2) {
+    white-space: pre-wrap;
+}
