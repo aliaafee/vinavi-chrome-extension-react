@@ -1,7 +1,7 @@
 {
-  "name": "chrome-extension-react-webpack",
+  "name": "vinavi-chrome-extension",
   "version": "0.0.1",
-  "description": "Chrome Extension React Webpack Full Description",
+  "description": "Chrome extension to more conveniently browse episodes on Vinavi",
   "scripts": {
     "dev": "node scripts/devserver.js",
     "build": "webpack"

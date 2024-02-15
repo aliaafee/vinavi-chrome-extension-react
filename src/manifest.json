@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
-    "name": "Chrome Extension Chrome Webpack",
-    "description": "Detailed Description",
+    "name": "Vinavi Chrome Extension",
+    "description": "Chrome extension to more conveniently browse episodes on Vinavi",
     "content_scripts": [
         {
             "matches": [
