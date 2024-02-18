@@ -1,0 +1,17 @@
+@tailwind base;
+
+@tailwind components;
+
+@tailwind utilities;
+
+
+.external-link {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    mask: url("./images/external-link.svg") no-repeat center;
+}
+
+.logo {
+    background: url("./images/icon.svg") no-repeat center;
+}

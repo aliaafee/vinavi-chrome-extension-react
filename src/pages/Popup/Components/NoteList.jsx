@@ -1,6 +1,6 @@
 import React from 'react';
 
-import './NoteList.css'
+// import './NoteList.css'
 
 class NoteList extends React.Component {
     render() {
@@ -9,12 +9,12 @@ class NoteList extends React.Component {
         }
         return (
             <div id="notes">
-                <h2>Notes</h2>
-                <ul className='notes-list'>
+                <h2 className='my-2 font-bold'>Notes</h2>
+                <ul className='flex flex-col gap-2'>
                     {this.props.notes.map(((note, index) => (
-                        <li key={index} className={`note ${note.attributes.note_type}`}>
-                            <span>{note.attributes.note_type}</span>
-                            <span>{note.attributes.notes}</span>
+                        <li key={index} className={`rounded-md divide-solid divide-y divide-x-0 bg-gray-100 divide-grey-300 ${note.attributes.note_type}`}>
+                            <div className='p-1.5 capitalize'>{note.attributes.note_type}</div>
+                            <div className='p-1.5 whitespace-pre-wrap'>{note.attributes.notes}</div>
                         </li>
                     )))}
                 </ul>

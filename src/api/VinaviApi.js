@@ -124,8 +124,23 @@ async function getCases(patientId, page = 1) {
 async function getAllCases(patientId, page = 1) {
     const cases = await getCases(patientId, page);
 
+    if (cases === null) {
+        return null;
+    }
+
     if (cases.meta.last_page > cases.meta.current_page) {
         const moreCases = await getAllCases(patientId, page + 1);
+
+        if (moreCases === null) {
+            return {
+                data: cases,
+                meta: {
+                    current_page: 1,
+                    last_page: 1
+                }
+            }
+        }
+
         return {
             data: cases.data.concat(moreCases.data),
             meta: {

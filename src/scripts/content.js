@@ -1,12 +1,10 @@
+const apiRoot = '/api'
+
+
 chrome.runtime.onMessage.addListener(
     (request, sender, sendResponse) => {
         if (request.action === "getCases") {
             (async () => {
-                // const patientId = await getPatientId()
-                // if (patientId === null) {
-                //     sendResponse(null);
-                //     return true;
-                // }
                 const cases = await getCases(request.patientId, request.page);
                 sendResponse(cases);
             })();
@@ -37,6 +35,14 @@ chrome.runtime.onMessage.addListener(
 );
 
 
+function getApiUrl() {
+    const url = new URL(window.location.href);
+
+    return `${url.protocol}//${url.hostname}:${url.port}${apiRoot}`
+
+}
+
+
 async function getPatientId() {
     const currentUrl = window.location.href;
 
@@ -64,19 +70,19 @@ async function getResource(url) {
 
 async function getCases(patientId, page) {
     return await getResource(
-        `https://vinavi.aasandha.mv/api/patients/${patientId}/patient-cases?include=episodes,doctor&page%5Bnumber%5D=${page}&sort=-created_at`
+        `${getApiUrl()}/patients/${patientId}/patient-cases?include=episodes,doctor&page%5Bnumber%5D=${page}&sort=-created_at`
     )
 }
 
 async function getEpisodeDetail(episodeId) {
     return await getResource(
-        `https://vinavi.aasandha.mv/api/episodes/${episodeId}?include=patient,doctor,prescriptions.medicines.preferred-medicine,prescriptions.consumables.preferred-consumable,prescriptions.professional,requested-services.service.service-professions,requested-services.professional,requested-services.documents,diagnoses.icd-code,vitals,vitals.professional,admission,requested-admission,eev-referrals,current-eev-referral,notes.professional,diagnoses.professional`
+        `${getApiUrl()}/episodes/${episodeId}?include=patient,doctor,prescriptions.medicines.preferred-medicine,prescriptions.consumables.preferred-consumable,prescriptions.professional,requested-services.service.service-professions,requested-services.professional,requested-services.documents,diagnoses.icd-code,vitals,vitals.professional,admission,requested-admission,eev-referrals,current-eev-referral,notes.professional,diagnoses.professional`
     )
 }
 
 async function getPatient(patientId) {
     return await getResource(
-        `https://vinavi.aasandha.mv/api/patients/${patientId}?include=current-admission,current-eev-referral,admission-request,address.island.atoll,blocked-patient`
+        `${getApiUrl()}/patients/${patientId}?include=current-admission,current-eev-referral,admission-request,address.island.atoll,blocked-patient`
     )
 }
 

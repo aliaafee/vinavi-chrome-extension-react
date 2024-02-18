@@ -1,9 +1,12 @@
 import React from 'react';
 
-import './Popup.css';
+import '../../../styles.css';
+
 import VinaviApi from '../../../api/VinaviApi'
 import CasesList from './CasesList';
 import EpisodeDetail from './EpisodeDetail';
+import LoadingSpinner from './LoadingSpinner';
+import ErrorMessage from './ErrorMessage';
 
 
 class Popup extends React.Component {
@@ -27,12 +30,20 @@ class Popup extends React.Component {
                 patient: 'failed',
                 cases: 'failed',
                 filteredCases: 'failed'
-            })
+            });
+            return
         }
 
         const cases = await VinaviApi.getAllCases(patient.data.id);
 
-        console.log(cases);
+        if (cases === null) {
+            this.setState({
+                patient: 'failed',
+                cases: 'failed',
+                filteredCases: 'failed'
+            });
+            return
+        }
 
         this.setState({
             patient: patient,
@@ -48,6 +59,13 @@ class Popup extends React.Component {
         })
 
         const episodeDetail = await VinaviApi.getEpisodeDetail(episode.id);
+
+        if (episodeDetail === null) {
+            this.setState({
+                selectedEpisode: 'failed'
+            })
+            return
+        }
 
         this.setState({
             selectedEpisode: episodeDetail
@@ -74,7 +92,7 @@ class Popup extends React.Component {
                     || episode.attributes.created_at.includes(filterText)
             }, false)
         });
-    
+
         return {
             data: filteredData,
             meta: {
@@ -82,7 +100,7 @@ class Popup extends React.Component {
                 last_page: 1
             }
         }
-    
+
     }
 
     getAge(dateOfBirth) {
@@ -98,60 +116,68 @@ class Popup extends React.Component {
     render() {
         if (this.state.patient === null) {
             return (
-                <div id="loading">
-                    <span class="spinner"><span></span></span>
-                </div>
+                <LoadingSpinner 
+                    message="Loading Episodes."
+                />
             )
         }
 
         if (this.state.patient === 'failed') {
             return (
-                <div id="message">
-                    <div>
-                        <h1>Error</h1>
-                        <div>Failed to load, patient not found.</div>
-                    </div>
-                </div>
+                <ErrorMessage
+                    title="Error"
+                    message="Failed To Load Episodes." />
             )
         }
 
+        const headerHeight = "86px";
+        const sidebarWidth = "200px";
+
         return (
-            <div id="content">
-                <div id="patient-info">
-                    <div id="patient-name">
+            <div className='flex flex-col'>
+                <div className='fixed bg-gray-200 grid grid-cols-2 w-screen gap-1.5 p-1.5'>
+                    <div className='col-span-2 text-lg'>
                         {this.state.patient.data.attributes.patient_name}
                     </div>
-                    <div id="patient-age">
+                    <div>
                         {this.getAge(new Date(this.state.patient.data.attributes.birth_date))}
                     </div>
-                    <div id="patient-sex">
+                    <div className='capitalize'>
                         {this.state.patient.data.attributes.gender}
                     </div>
-                    <div id="patient-nid">
+                    <div>
                         {this.state.patient.data.attributes.national_identification}
                     </div>
-                    <div id="patient-dob">
-                        {this.state.patient.data.attributes.birth_date}
+                    <div>
+                        Birth Date {this.state.patient.data.attributes.birth_date}
                     </div>
                 </div>
-                <div id="list-container">
-                    <div id="filter">
-                        <input
-                            id="filter-input"
-                            placeholder="Filter"
-                            value={this.state.filterText}
-                            onChange={(event) => this.onFilterChanged(event)}
+                <div className=''>
+                    <div className='flex flex-col fixed bg-gray-200' style={{top: headerHeight, height: `calc(100vh - ${headerHeight})`, width: sidebarWidth}}>
+                        <div className='px-1.5 pt-1.5 pb-0 font-bold bg-gray-300'>
+                            Episodes
+                        </div>
+                        <div className='flex flex-col p-1.5 bg-gray-300'>
+                            <input
+                                placeholder="Filter"
+                                value={this.state.filterText}
+                                onChange={(event) => this.onFilterChanged(event)}
+                                className='p-1.5 rounded-md border-solid border-1 border-gray-400 focus:outline-none focus:ring focus:border-red-300'
+                            />
+                        </div>
+                        <CasesList
+                            cases={this.state.filteredCases}
+                            onEpisodeSelected={(episode) => this.onEpisodeSelected(episode)}
+                            selectedEpisodeId={this.state.selectedEpisodeId}
+                            className='overflow-y-auto overflow-x-hidden'
                         />
                     </div>
-                    <CasesList
-                        cases={this.state.filteredCases}
-                        onEpisodeSelected={(episode) => this.onEpisodeSelected(episode)}
-                        selectedEpisodeId={this.state.selectedEpisodeId}
+                    <EpisodeDetail
+                        episode={this.state.selectedEpisode}
+                        className='fixed overflow-y-auto overflow-x-hidden'
+                        style={{left: sidebarWidth, top: headerHeight, width:`calc(100vw - ${sidebarWidth})`, height:`calc(100vh - ${headerHeight})`}}
                     />
                 </div>
-                <EpisodeDetail
-                    episode={this.state.selectedEpisode}
-                />
             </div >
         );
     }

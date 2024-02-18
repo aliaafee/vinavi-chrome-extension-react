@@ -2,14 +2,14 @@
 
 <h2 align="center">Vinavi Chrome Extension</h2>
 
-<p align="center">Chrome extension to more conveniently browse episodes on Vinavi. This extension is built using React 18 and Webpack 5</p>
+<p align="center">Chrome extension to more conveniently browse episodes on Vinavi. This extension is built using React 18, Webpack 5 and Tailwind CSS 3</p>
 
 ## Build
 
 * Run `npm install`
 * Run `npm run build`.
 * Find the extension files in ./build folder.
-* Use npm run dev to start live server to auto reload while editing the source files.
+* Use `npm run start` to start live server to auto reload while editing the source files.
 
 ## Installation
 
