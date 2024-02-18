@@ -1,16 +1,11 @@
 import json
 import re
-from flask import Flask, render_template, request, redirect
+from flask import Flask, request, send_file
 import config
 
-# SERVER_CONFIG_FILE = "test-server.config.json"
 
 class TestResources:
     def __init__(self) -> None:
-
-        # with open(SERVER_CONFIG_FILE) as f:
-            # self.config = json.load(f)
-
         self.api_root = config.API_ROOT
 
         with open(config.HTTP_ARCHIVE) as f:
@@ -31,17 +26,15 @@ class TestResources:
         print(path)
         return self.resources[path]
 
-resources = TestResources()
-# patient_id = resources.config['patientId']
 
+resources = TestResources()
 
 app = Flask(__name__)
 
 
-
 @app.route('/')
 def index():
-    return f'<html><head><script type="text/javascript">history.pushState(null, null, "#/patients/{config.PATIENT_ID}");</script></head><body>Patient Id {config.PATIENT_ID}</body></html>'
+    return send_file(config.INDEX_HTML)
 
 
 @app.route('/api/', defaults={'path': ''})
@@ -50,6 +43,7 @@ def get_dir(path):
     resource_path = f'{request.path}?{request.query_string.decode()}'.removeprefix("/api")
     
     return resources.getResource(resource_path)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
