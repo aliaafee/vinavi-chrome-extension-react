@@ -22,7 +22,7 @@ class PrescriptionList extends React.Component {
                                     if (prescription_medicine.relationships['preferred-medicine'] === null) {
                                         return (
                                             <li key={medicineIndex}>
-                                                <span class="font-bold">${prescription_medicine.attributes.name} </span>
+                                                <span class="font-bold">{prescription_medicine.attributes.name} </span>
                                                 <span>{prescription_medicine.attributes.instructions}</span>
                                             </li>
                                         )

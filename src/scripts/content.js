@@ -21,16 +21,32 @@ chrome.runtime.onMessage.addListener(
 
         if (request.action === "getPatient") {
             (async () => {
-                const patientId = await getPatientId()
+                if (request.patientId !== null) {
+                    const patient = await getPatient(request.patientId);
+                    sendResponse(patient);
+                    return true;
+                }
+                // If patient Id is not provided, will try to get patientId from the active Tab
+                const patientId = await getCurrentPatientId()
                 if (patientId === null) {
                     sendResponse(null);
                     return true;
                 }
+
                 const patient = await getPatient(patientId);
                 sendResponse(patient);
             })();
             return true;
         }
+
+        if (request.action === "getCurrentPatientId") {
+            (async () => {
+                const patientId = await getCurrentPatientId()
+                sendResponse(patientId);
+            })();
+            return true;
+        }
+
     }
 );
 
@@ -43,7 +59,7 @@ function getApiUrl() {
 }
 
 
-async function getPatientId() {
+async function getCurrentPatientId() {
     const currentUrl = window.location.href;
 
     const patientIdmatch = currentUrl.match(/\/patients\/(\d+)/);

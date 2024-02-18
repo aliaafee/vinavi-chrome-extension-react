@@ -175,15 +175,31 @@ async function getEpisodeDetail(episodeId) {
     }
 }
 
-async function getPatient() {
+async function getPatient(patientId = null) {
     const activeTab = await getActiveTab();
     try {
         return processResource(await chrome.tabs.sendMessage(
             activeTab.id,
             {
-                "action": "getPatient"
+                "action": "getPatient",
+                "patientId": patientId
             }
         ));
+    } catch (error) {
+        return null
+    }
+}
+
+
+async function getCurrentPatientId() {
+    const activeTab = await getActiveTab();
+    try {
+        return await chrome.tabs.sendMessage(
+            activeTab.id,
+            {
+                "action": "getCurrentPatientId"
+            }
+        );
     } catch (error) {
         return null
     }
@@ -193,5 +209,6 @@ export default {
     getAllCases: getAllCases,
     getCases: getCases,
     getEpisodeDetail: getEpisodeDetail,
-    getPatient: getPatient
+    getPatient: getPatient,
+    getCurrentPatientId: getCurrentPatientId
 }

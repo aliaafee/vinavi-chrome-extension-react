@@ -9,7 +9,7 @@ import LoadingSpinner from './LoadingSpinner';
 import ErrorMessage from './ErrorMessage';
 
 
-class Popup extends React.Component {
+class EpisodeBrowser extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -23,7 +23,20 @@ class Popup extends React.Component {
     }
 
     async componentDidMount() {
-        const patient = await VinaviApi.getPatient();
+        const patientId = this.props.patientId !== undefined
+            ? this.props.patientId
+            : await VinaviApi.getCurrentPatientId();
+
+        if (patientId === null) {
+            this.setState({
+                patient: 'failed',
+                cases: 'failed',
+                filteredCases: 'failed'
+            });
+            return
+        }
+
+        const patient = await VinaviApi.getPatient(patientId);
 
         if (patient === null) {
             this.setState({
@@ -52,7 +65,7 @@ class Popup extends React.Component {
         })
     }
 
-    async onEpisodeSelected(episode) {
+    onEpisodeSelected = async (episode) => {
         this.setState({
             selectedEpisode: 'loading',
             selectedEpisodeId: episode.id
@@ -72,11 +85,11 @@ class Popup extends React.Component {
         })
     }
 
-    onFilterChanged(event) {
+    onFilterChanged = (event) => {
         const filterText = event.target.value;
         this.setState({
             filterText: filterText,
-            filteredCases: this.filterCases(filterText, this.state.cases)
+            filteredCases: this.filterCases(filterText)
         })
     }
 
@@ -84,7 +97,7 @@ class Popup extends React.Component {
         if (filterText === "") {
             return cases
         }
-        const filteredData = cases.data.filter((patientCase) => {
+        const filteredData = this.state.cases.data.filter((patientCase) => {
             return patientCase.relationships.episodes.data.reduce((accumulator, episode) => {
                 const name = patientCase.relationships.doctor.data.attributes.fullname;
                 return accumulator
@@ -116,7 +129,7 @@ class Popup extends React.Component {
     render() {
         if (this.state.patient === null) {
             return (
-                <LoadingSpinner 
+                <LoadingSpinner
                     message="Loading Episodes."
                 />
             )
@@ -153,7 +166,7 @@ class Popup extends React.Component {
                     </div>
                 </div>
                 <div className=''>
-                    <div className='flex flex-col fixed bg-gray-200' style={{top: headerHeight, height: `calc(100vh - ${headerHeight})`, width: sidebarWidth}}>
+                    <div className='flex flex-col fixed bg-gray-200' style={{ top: headerHeight, height: `calc(100vh - ${headerHeight})`, width: sidebarWidth }}>
                         <div className='px-1.5 pt-1.5 pb-0 font-bold bg-gray-300'>
                             Episodes
                         </div>
@@ -161,13 +174,13 @@ class Popup extends React.Component {
                             <input
                                 placeholder="Filter"
                                 value={this.state.filterText}
-                                onChange={(event) => this.onFilterChanged(event)}
+                                onChange={this.onFilterChanged}
                                 className='p-1.5 rounded-md border-solid border-1 border-gray-400 focus:outline-none focus:ring focus:border-red-300'
                             />
                         </div>
                         <CasesList
                             cases={this.state.filteredCases}
-                            onEpisodeSelected={(episode) => this.onEpisodeSelected(episode)}
+                            onEpisodeSelected={this.onEpisodeSelected}
                             selectedEpisodeId={this.state.selectedEpisodeId}
                             className='overflow-y-auto overflow-x-hidden'
                         />
@@ -175,7 +188,7 @@ class Popup extends React.Component {
                     <EpisodeDetail
                         episode={this.state.selectedEpisode}
                         className='fixed overflow-y-auto overflow-x-hidden'
-                        style={{left: sidebarWidth, top: headerHeight, width:`calc(100vw - ${sidebarWidth})`, height:`calc(100vh - ${headerHeight})`}}
+                        style={{ left: sidebarWidth, top: headerHeight, width: `calc(100vw - ${sidebarWidth})`, height: `calc(100vh - ${headerHeight})` }}
                     />
                 </div>
             </div >
@@ -183,4 +196,4 @@ class Popup extends React.Component {
     }
 }
 
-export default Popup;
+export default EpisodeBrowser;
