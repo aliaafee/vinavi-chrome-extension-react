@@ -4,6 +4,13 @@ import '../../../styles.css';
 
 class LoadingSpinner extends React.Component {
     render() {
+        if (this.props.size === 'small') {
+            return (
+                <div className='w-full h-full flex flex-col items-center justify-center'>
+                    <div className='animate-spin w-4 h-4 rounded-full border-2 border-grey-200 border-t-black border-solid'></div>
+                </div>
+            )
+        }
         return (
             <div className='w-full h-full flex flex-col items-center justify-center'>
                 <div className='p-2'>{this.props.message}</div>

@@ -1,5 +1,3 @@
-const apiRoot = '/api'
-
 
 chrome.runtime.onMessage.addListener(
     (request, sender, sendResponse) => {
@@ -47,9 +45,18 @@ chrome.runtime.onMessage.addListener(
             return true;
         }
 
+        if (request.action === "searchPatientByNationalIdentification") {
+            (async () => {
+                const searchResult = await searchPatientByNationalIdentification(request.nationalIdentification)
+                sendResponse(searchResult);
+            })();
+            return true;
+        }
+
     }
 );
 
+const apiRoot = '/api'
 
 function getApiUrl() {
     const url = new URL(window.location.href);
@@ -101,4 +108,11 @@ async function getPatient(patientId) {
         `${getApiUrl()}/patients/${patientId}?include=current-admission,current-eev-referral,admission-request,address.island.atoll,blocked-patient`
     )
 }
+
+async function searchPatientByNationalIdentification(nationalIdentification) {
+    return await getResource(
+        `${getApiUrl()}/patients/search/${nationalIdentification}`
+    )
+}
+// https://vinavi.aasandha.mv/api/patients/search/a039556
 

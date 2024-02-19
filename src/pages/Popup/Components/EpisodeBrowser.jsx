@@ -22,32 +22,57 @@ class EpisodeBrowser extends React.Component {
         };
     }
 
+    static getDerivedStateFromProps(props, state) {
+        if (state.patient !== null) {
+            if (state.patient.data.id === props.patient.data.id) {
+                return null
+            }
+        }
+
+        return {
+            patient: props.patient,
+            cases: null,
+            filterCases: null,
+            selectedEpisode: null,
+            selectedEpisodeId: null,
+            filterText: ''
+        }
+    }
+
     async componentDidMount() {
-        const patientId = this.props.patientId !== undefined
-            ? this.props.patientId
-            : await VinaviApi.getCurrentPatientId();
+        // const patientId = this.props.patientId !== undefined
+        //     ? this.props.patientId
+        //     : await VinaviApi.getCurrentPatientId();
 
-        if (patientId === null) {
-            this.setState({
-                patient: 'failed',
-                cases: 'failed',
-                filteredCases: 'failed'
-            });
-            return
+        // if (patientId === null) {
+        //     this.setState({
+        //         patient: 'failed',
+        //         cases: 'failed',
+        //         filteredCases: 'failed'
+        //     });
+        //     return
+        // }
+
+        // const patient = await VinaviApi.getPatient(patientId);
+
+        // if (patient === null) {
+        //     this.setState({
+        //         patient: 'failed',
+        //         cases: 'failed',
+        //         filteredCases: 'failed'
+        //     });
+        //     return
+        // }
+
+        if (this.state.patient === null) {
+            return;
         }
 
-        const patient = await VinaviApi.getPatient(patientId);
-
-        if (patient === null) {
-            this.setState({
-                patient: 'failed',
-                cases: 'failed',
-                filteredCases: 'failed'
-            });
-            return
+        if (this.state.cases !== null) {
+            return;
         }
 
-        const cases = await VinaviApi.getAllCases(patient.data.id);
+        const cases = await VinaviApi.getAllCases(this.state.patient.data.id);
 
         if (cases === null) {
             this.setState({
@@ -59,7 +84,6 @@ class EpisodeBrowser extends React.Component {
         }
 
         this.setState({
-            patient: patient,
             cases: cases,
             filteredCases: cases
         })
@@ -127,7 +151,7 @@ class EpisodeBrowser extends React.Component {
     }
 
     render() {
-        if (this.state.patient === null) {
+        if (this.state.cases === null) {
             return (
                 <LoadingSpinner
                     message="Loading Episodes."
@@ -135,7 +159,7 @@ class EpisodeBrowser extends React.Component {
             )
         }
 
-        if (this.state.patient === 'failed') {
+        if (this.state.cases === 'failed') {
             return (
                 <ErrorMessage
                     title="Error"
@@ -175,7 +199,7 @@ class EpisodeBrowser extends React.Component {
                                 placeholder="Filter"
                                 value={this.state.filterText}
                                 onChange={this.onFilterChanged}
-                                className='p-1.5 rounded-md border-solid border-1 border-gray-400 focus:outline-none focus:ring focus:border-red-300'
+                                className='p-1.5 rounded-md border-0 focus:outline-2 focus:outline-red-300'
                             />
                         </div>
                         <CasesList

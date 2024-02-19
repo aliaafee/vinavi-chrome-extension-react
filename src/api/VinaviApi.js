@@ -205,10 +205,26 @@ async function getCurrentPatientId() {
     }
 }
 
+async function searchPatientByNationalIdentification(nationalIdentification) {
+    const activeTab = await getActiveTab();
+    try {
+        return await chrome.tabs.sendMessage(
+            activeTab.id,
+            {
+                "action": "searchPatientByNationalIdentification",
+                'nationalIdentification': nationalIdentification
+            }
+        );
+    } catch (error) {
+        return null
+    }
+}
+
 export default {
     getAllCases: getAllCases,
     getCases: getCases,
     getEpisodeDetail: getEpisodeDetail,
     getPatient: getPatient,
-    getCurrentPatientId: getCurrentPatientId
+    getCurrentPatientId: getCurrentPatientId,
+    searchPatientByNationalIdentification: searchPatientByNationalIdentification
 }
