@@ -37,12 +37,23 @@ def index():
     return send_file(config.INDEX_HTML)
 
 
+@app.route('/blank')
+def blank():
+    return "Blank page"
+
+
 @app.route('/api/', defaults={'path': ''})
 @app.route('/api/<path:path>')
 def get_dir(path):
-    resource_path = f'{request.path}?{request.query_string.decode()}'.removeprefix("/api")
+    query_string = ""
+    if request.query_string:
+        query_string = f'?{request.query_string.decode()}'
+    resource_path = f'{request.path}{query_string}'.removeprefix("/api")
     
-    return resources.getResource(resource_path)
+    try:
+        return resources.getResource(resource_path)
+    except KeyError:
+        return "Not Found", 404
 
 
 if __name__ == '__main__':
