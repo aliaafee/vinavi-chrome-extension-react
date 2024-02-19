@@ -5,7 +5,7 @@
 <p align="center">Chrome extension to more conveniently browse episodes on Vinavi. This extension is built using React 18, Webpack 5 and Tailwind CSS 3</p>
 
 ## Download
-* Download the latest release file [vinavi-chrome-extension-react-0.0.1.zip](https://github.com/aliaafee/vinavi-chrome-extension-react/releases/download/v0.0.1/vinavi-chrome-extension-react-0.0.1.zip).
+* Download the latest release file [vinavi-chrome-extension-react-0.0.2.zip](https://github.com/aliaafee/vinavi-chrome-extension-react/releases/download/v0.0.2/vinavi-chrome-extension-react-0.0.2.zip).
 * Follow the installation instructions below.
 
 ## Build
