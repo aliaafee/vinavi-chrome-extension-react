@@ -5,18 +5,47 @@ import '../../../styles.css';
 import VinaviApi from '../../../api/VinaviApi'
 import EpisodeBrowser from './EpisodeBrowser';
 import LoadingSpinner from './LoadingSpinner';
+import ErrorMessage from './ErrorMessage';
 
 
 class PatientSearch extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            user: null,
             patient: null,
             searchText: ''
         }
     }
 
     async componentDidMount() {
+        this.setState({
+            user: 'loading'
+        })
+
+        const user = await VinaviApi.getAuthenticatedUser();
+
+        if (user === null) {
+            this.setState({
+                user: 'failed'
+            })
+            return
+        }
+
+        const serviceProvider = await VinaviApi.getServiceProvider();
+
+        if (serviceProvider === null) {
+            this.setState({
+                user: 'failed'
+            })
+            return
+        }
+
+        this.setState({
+            user: user
+        })
+
+
         this.setState({
             patient: 'loading'
         })
@@ -48,6 +77,13 @@ class PatientSearch extends React.Component {
         this.setState({
             searchText: event.target.value
         })
+    }
+
+    onSearchKeyUp = (event) => {
+        console.log(event.key);
+        if (event.key === 'Enter') {
+            this.onSearch();
+        }
     }
 
     onSearch = async (event) => {
@@ -94,6 +130,26 @@ class PatientSearch extends React.Component {
     }
 
     render() {
+        if (this.state.user === 'loading') {
+            return (
+                <LoadingSpinner
+                    message="Checking Login Status."
+                />
+            )
+        }
+
+        if (this.state.user === 'failed') {
+            return (
+                <ErrorMessage
+                    title="Error"
+                    message="Not Authorized.">
+                    Go to <a target='_blank' href='https://auth.aasandha.mv/auth/login' className='text-blue-600 hover:underline'>
+                        https://auth.aasandha.mv/auth/login
+                    </a> to complete login and select service provider.
+                </ErrorMessage>
+            )
+        }
+
         if (this.state.patient === null || this.state.patient === 'notfound' || this.state.patient === 'searching') {
             return (
                 <div className='w-full h-full flex flex-col items-center justify-center'>
@@ -105,11 +161,12 @@ class PatientSearch extends React.Component {
                             placeholder="Patient Identification"
                             value={this.state.searchText}
                             onChange={this.onSearchChanged}
+                            onKeyUp={this.onSearchKeyUp}
                             className='p-1.5 rounded-md border-0 focus:outline-2 focus:outline-red-300'
                         />
                         <button
                             onClick={this.state.patient !== 'searching' ? this.onSearch : null}
-                            className='w-12 p-1.5 rounded-md bg-gray-400 border-0 focus:outline-2 focus:outline-red-300 hover:bg-red-300'>
+                            className='w-12 p-1.5 rounded-md bg-red-300 border-0 focus:outline-2 focus:outline-red-300 hover:bg-red-400'>
                             {
                                 this.state.patient === 'searching' ? (<LoadingSpinner size='small' />) :
                                     'Go'

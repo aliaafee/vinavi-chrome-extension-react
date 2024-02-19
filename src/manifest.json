@@ -5,7 +5,7 @@
     "content_scripts": [
         {
             "matches": [
-                "<all_urls>"
+                "https://vinavi.aasandha.mv/*"
             ],
             "js": [
                 "content.js"

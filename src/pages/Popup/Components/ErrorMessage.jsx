@@ -7,8 +7,14 @@ class ErrorMessage extends React.Component {
         return (
             <div className='w-full h-full flex items-center justify-center'>
                 <div>
-                    <div className='text-lg text-center'>{this.props.title}</div>
-                    <div>{this.props.message}</div>
+                    <div className='text-lg text-center w-80'>{this.props.title}</div>
+                    <div className='text-center w-80'>{this.props.message}</div>
+                    {
+                        this.props.children ?
+                            (<div className='text-center w-80'>{this.props.children}</div>) :
+                            ""
+                    }
+
                 </div>
             </div>
         )

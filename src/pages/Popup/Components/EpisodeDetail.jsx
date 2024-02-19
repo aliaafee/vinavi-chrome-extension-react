@@ -74,7 +74,7 @@ class EpisodeDetailComponent extends React.Component {
                             title="Open episode"
                             target="_blank"
                             href={`https://vinavi.aasandha.mv/#/patients/${patientId}/episodes/${episodeId}`}
-                            className='ml-2 external-link bg-blue-400 hover:bg-blue-800'>
+                            className='ml-2 external-link bg-blue-600 hover:bg-blue-800'>
 
                         </a>
                     </h2>

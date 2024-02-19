@@ -1,3 +1,28 @@
+const apiRoot = 'https://vinavi.aasandha.mv/api'
+// const apiRoot = 'http://127.0.0.1:5000/api'
+
+const apiServer = 'https://vinavi.aasandha.mv';
+const apiPath = '/api'
+
+function getApiUrl() {
+    return `${apiServer}${apiPath}`
+}
+
+
+async function getResource(url) {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            return null
+        }
+
+        return await response.json();
+    } catch (error) {
+        return null
+    }
+}
+
+
 function processRelationshipItem(relationshipItem, includedMap, depth) {
     if (!(relationshipItem.type in includedMap)) {
         return relationshipItem;
@@ -105,21 +130,85 @@ async function getActiveTab() {
 }
 
 async function getCases(patientId, page = 1) {
-    const activeTab = await getActiveTab();
-
     try {
-        return processResource(await chrome.tabs.sendMessage(
-            activeTab.id,
-            {
-                "action": "getCases",
-                "patientId": patientId,
-                "page": page
-            }
-        ));
+        return processResource(await getResource(
+            `${getApiUrl()}/patients/${patientId}/patient-cases?include=episodes,doctor&page%5Bnumber%5D=${page}&sort=-created_at`
+        ))
     } catch (error) {
         return null
     }
 }
+
+
+
+async function getEpisodeDetail(episodeId) {
+    try {
+        return processResource(await getResource(
+            `${getApiUrl()}/episodes/${episodeId}?include=patient,doctor,prescriptions.medicines.preferred-medicine,prescriptions.consumables.preferred-consumable,prescriptions.professional,requested-services.service.service-professions,requested-services.professional,requested-services.documents,diagnoses.icd-code,vitals,vitals.professional,admission,requested-admission,eev-referrals,current-eev-referral,notes.professional,diagnoses.professional`
+        ))
+    } catch (error) {
+        return null
+    }
+}
+
+async function getPatient(patientId = null) {
+    try {
+        return processResource(await getResource(
+            `${getApiUrl()}/patients/${patientId}?include=current-admission,current-eev-referral,admission-request,address.island.atoll,blocked-patient`
+        ))
+    } catch (error) {
+        return null
+    }
+}
+
+
+async function searchPatientByNationalIdentification(nationalIdentification) {
+    try {
+        return await getResource(
+            `${getApiUrl()}/patients/search/${nationalIdentification}`
+        )
+    } catch (error) {
+        return null
+    }
+}
+
+
+async function getAuthenticatedUser() {
+    try {
+        return await getResource(
+            `${getApiUrl()}/users/authenticated`
+        )
+    } catch (error) {
+        return null
+    }
+}
+
+
+async function getServiceProvider() {
+    try {
+        return await getResource(
+            `${apiServer}/service-provider`
+        )
+    } catch (error) {
+        return null
+    }
+}
+
+
+async function getCurrentPatientId() {
+    const activeTab = await getActiveTab();
+    try {
+        return await chrome.tabs.sendMessage(
+            activeTab.id,
+            {
+                "action": "getCurrentPatientId"
+            }
+        );
+    } catch (error) {
+        return null
+    }
+}
+
 
 async function getAllCases(patientId, page = 1) {
     const cases = await getCases(patientId, page);
@@ -159,66 +248,6 @@ async function getAllCases(patientId, page = 1) {
     }
 }
 
-async function getEpisodeDetail(episodeId) {
-    const activeTab = await getActiveTab();
-
-    try {
-        return processResource(await chrome.tabs.sendMessage(
-            activeTab.id,
-            {
-                "action": "getEpisodeDetail",
-                "episodeId": episodeId
-            }
-        ));
-    } catch (error) {
-        return null
-    }
-}
-
-async function getPatient(patientId = null) {
-    const activeTab = await getActiveTab();
-    try {
-        return processResource(await chrome.tabs.sendMessage(
-            activeTab.id,
-            {
-                "action": "getPatient",
-                "patientId": patientId
-            }
-        ));
-    } catch (error) {
-        return null
-    }
-}
-
-
-async function getCurrentPatientId() {
-    const activeTab = await getActiveTab();
-    try {
-        return await chrome.tabs.sendMessage(
-            activeTab.id,
-            {
-                "action": "getCurrentPatientId"
-            }
-        );
-    } catch (error) {
-        return null
-    }
-}
-
-async function searchPatientByNationalIdentification(nationalIdentification) {
-    const activeTab = await getActiveTab();
-    try {
-        return await chrome.tabs.sendMessage(
-            activeTab.id,
-            {
-                "action": "searchPatientByNationalIdentification",
-                'nationalIdentification': nationalIdentification
-            }
-        );
-    } catch (error) {
-        return null
-    }
-}
 
 export default {
     getAllCases: getAllCases,
@@ -226,5 +255,7 @@ export default {
     getEpisodeDetail: getEpisodeDetail,
     getPatient: getPatient,
     getCurrentPatientId: getCurrentPatientId,
-    searchPatientByNationalIdentification: searchPatientByNationalIdentification
+    searchPatientByNationalIdentification: searchPatientByNationalIdentification,
+    getAuthenticatedUser: getAuthenticatedUser,
+    getServiceProvider: getServiceProvider
 }
