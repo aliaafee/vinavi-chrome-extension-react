@@ -1,6 +1,7 @@
 import json
 import re
 from flask import Flask, request, send_file
+from flask_cors import CORS, cross_origin
 import config
 
 
@@ -30,6 +31,7 @@ class TestResources:
 resources = TestResources()
 
 app = Flask(__name__)
+CORS(app, supports_credentials=True)
 
 
 @app.route('/')
@@ -44,6 +46,7 @@ def blank():
 
 @app.route('/api/', defaults={'path': ''})
 @app.route('/api/<path:path>')
+@cross_origin(supports_credentials=True)
 def get_dir(path):
     query_string = ""
     if request.query_string:
@@ -54,6 +57,11 @@ def get_dir(path):
         return resources.getResource(resource_path)
     except KeyError:
         return "Not Found", 404
+    
+
+@app.route('/service-provider')
+def service_provider():
+    return '{"data":{"id":"0000"}}'
 
 
 if __name__ == '__main__':
