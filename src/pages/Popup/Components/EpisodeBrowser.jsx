@@ -117,9 +117,9 @@ class EpisodeBrowser extends React.Component {
         })
     }
 
-    filterCases(filterText, cases) {
+    filterCases(filterText) {
         if (filterText === "") {
-            return cases
+            return this.state.cases
         }
         const filteredData = this.state.cases.data.filter((patientCase) => {
             return patientCase.relationships.episodes.data.reduce((accumulator, episode) => {

@@ -1,6 +1,4 @@
-const apiRoot = 'https://vinavi.aasandha.mv/api'
-// const apiRoot = 'http://127.0.0.1:5000/api'
-
+// const apiServer = 'http://127.0.0.1:5000'
 const apiServer = 'https://vinavi.aasandha.mv';
 const apiPath = '/api'
 
