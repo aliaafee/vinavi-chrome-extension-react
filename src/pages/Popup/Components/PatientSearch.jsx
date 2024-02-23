@@ -130,7 +130,7 @@ class PatientSearch extends React.Component {
     }
 
     render() {
-        if (this.state.user === 'loading') {
+        if (this.state.user === 'loading' || this.state.user === null) {
             return (
                 <LoadingSpinner
                     message="Checking Login Status."
