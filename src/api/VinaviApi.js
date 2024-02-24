@@ -11,12 +11,31 @@ async function getResource(url) {
     try {
         const response = await fetch(url);
         if (!response.ok) {
-            return null
+            throw new Error(
+                `Could not fetch resource, ${response.status} ${response.statusText}`,
+                {
+                    cause: response
+                }
+            )
         }
 
-        return await response.json();
+        return await response.json()
+
     } catch (error) {
-        return null
+        if (error.cause) {
+            throw new Error(
+                `Could not fetch resource, ${error.cause.status} ${error.cause.statusText}`,
+                {
+                    cause: error.cause
+                }
+            )
+        }
+        throw new Error(
+            `Error, ${error.message}`,
+            {
+                cause: null
+            }
+        )
     }
 }
 
@@ -133,7 +152,12 @@ async function getCases(patientId, page = 1) {
             `${getApiUrl()}/patients/${patientId}/patient-cases?include=episodes,doctor&page%5Bnumber%5D=${page}&sort=-created_at`
         ))
     } catch (error) {
-        return null
+        throw new Error(
+            `Could not get cases, ${error.message}`,
+            {
+                cause: error.cause
+            }
+        )
     }
 }
 
@@ -145,9 +169,15 @@ async function getEpisodeDetail(episodeId) {
             `${getApiUrl()}/episodes/${episodeId}?include=patient,doctor,prescriptions.medicines.preferred-medicine,prescriptions.consumables.preferred-consumable,prescriptions.professional,requested-services.service.service-professions,requested-services.professional,requested-services.documents,diagnoses.icd-code,vitals,vitals.professional,admission,requested-admission,eev-referrals,current-eev-referral,notes.professional,diagnoses.professional`
         ))
     } catch (error) {
-        return null
+        throw new Error(
+            `Could not get episode detail, ${error.message}`,
+            {
+                cause: error.cause
+            }
+        )
     }
 }
+
 
 async function getPatient(patientId = null) {
     try {
@@ -155,7 +185,12 @@ async function getPatient(patientId = null) {
             `${getApiUrl()}/patients/${patientId}?include=current-admission,current-eev-referral,admission-request,address.island.atoll,blocked-patient`
         ))
     } catch (error) {
-        return null
+        throw new Error(
+            `Could not get patient, ${error.message}`,
+            {
+                cause: error.cause
+            }
+        )
     }
 }
 
@@ -166,7 +201,12 @@ async function searchPatientByNationalIdentification(nationalIdentification) {
             `${getApiUrl()}/patients/search/${nationalIdentification}`
         )
     } catch (error) {
-        return null
+        throw new Error(
+            `Could not search for patient, ${error.message}`,
+            {
+                cause: error.cause
+            }
+        )
     }
 }
 
@@ -177,7 +217,12 @@ async function getAuthenticatedUser() {
             `${getApiUrl()}/users/authenticated`
         )
     } catch (error) {
-        return null
+        throw new Error(
+            `Could not get authenticated user, ${error.message}`,
+            {
+                cause: error.cause
+            }
+        )
     }
 }
 
@@ -188,7 +233,12 @@ async function getServiceProvider() {
             `${apiServer}/service-provider`
         )
     } catch (error) {
-        return null
+        throw new Error(
+            `Could not get service provider, ${error.message}`,
+            {
+                cause: error.cause
+            }
+        )
     }
 }
 
@@ -203,24 +253,21 @@ async function getCurrentPatientId() {
             }
         );
     } catch (error) {
-        return null
+        throw error
     }
 }
 
 
 async function getAllCases(patientId, page = 1) {
-    const cases = await getCases(patientId, page);
 
-    if (cases === null) {
-        return null;
-    }
+    try {
+        const cases = await getCases(patientId, page);
 
-    if (cases.meta.last_page > cases.meta.current_page) {
-        const moreCases = await getAllCases(patientId, page + 1);
+        if (cases.meta.last_page > cases.meta.current_page) {
+            const moreCases = await getAllCases(patientId, page + 1);
 
-        if (moreCases === null) {
             return {
-                data: cases,
+                data: cases.data.concat(moreCases.data),
                 meta: {
                     current_page: 1,
                     last_page: 1
@@ -229,20 +276,19 @@ async function getAllCases(patientId, page = 1) {
         }
 
         return {
-            data: cases.data.concat(moreCases.data),
+            data: cases.data,
             meta: {
                 current_page: 1,
                 last_page: 1
             }
         }
-    }
-
-    return {
-        data: cases.data,
-        meta: {
-            current_page: 1,
-            last_page: 1
-        }
+    } catch (error) {
+        throw new Error(
+            "Failed to get all cases",
+            {
+                cause: error.cause
+            }
+        )
     }
 }
 
