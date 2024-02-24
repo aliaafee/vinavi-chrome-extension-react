@@ -14,7 +14,8 @@ class PatientSearch extends React.Component {
         this.state = {
             user: null,
             patient: null,
-            searchText: ''
+            searchText: '',
+            statusMessage: ''
         }
     }
 
@@ -23,54 +24,53 @@ class PatientSearch extends React.Component {
             user: 'loading'
         })
 
-        const user = await VinaviApi.getAuthenticatedUser();
+        try {
+            const user = await VinaviApi.getAuthenticatedUser();
+            const serviceProvider = await VinaviApi.getServiceProvider();
 
-        if (user === null) {
             this.setState({
-                user: 'failed'
+                user: user
+            })
+        } catch (error) {
+            if (error.cause) {
+                if (error.cause.status === 401) {
+                    this.setState({
+                        user: 'notauthorized',
+                    })
+                }
+                return
+            }
+            this.setState({
+                user: 'failed',
+                statusMessage: error.message
             })
             return
         }
-
-        const serviceProvider = await VinaviApi.getServiceProvider();
-
-        if (serviceProvider === null) {
-            this.setState({
-                user: 'failed'
-            })
-            return
-        }
-
-        this.setState({
-            user: user
-        })
-
 
         this.setState({
             patient: 'loading'
         })
 
-        const patientId = await VinaviApi.getCurrentPatientId();
+        try {
+            const patientId = await VinaviApi.getCurrentPatientId();
+            if (patientId === null) {
+                this.setState({
+                    patient: null
+                })
+                return;
+            }
 
-        if (patientId === null) {
+            const patient = await VinaviApi.getPatient(patientId);
+
             this.setState({
-                patient: null
+                patient: patient
             })
-            return;
-        }
-
-        const patient = await VinaviApi.getPatient(patientId);
-
-        if (patient === null) {
+        } catch (error) {
             this.setState({
                 patient: 'failed'
             })
             return;
         }
-
-        this.setState({
-            patient: patient
-        })
     }
 
     onSearchChanged = (event) => {
@@ -91,42 +91,44 @@ class PatientSearch extends React.Component {
             patient: 'searching'
         })
 
-        const patientSearchResult = await VinaviApi.searchPatientByNationalIdentification(this.state.searchText);
+        try {
+            const patientSearchResult = await VinaviApi.searchPatientByNationalIdentification(this.state.searchText);
 
-        if (patientSearchResult === null) {
+            if (!('data' in patientSearchResult)) {
+                this.setState({
+                    patient: 'notfound'
+                })
+                return
+            }
+
+            if (!('id' in patientSearchResult['data'])) {
+                this.setState({
+                    patient: 'notfound'
+                })
+                return
+            }
+
+            const patient = await VinaviApi.getPatient(patientSearchResult.data.id)
+
+            this.setState({
+                patient: patient
+            })
+        } catch (error) {
+            if (error.cause) {
+                if (error.cause.status == 404) {
+                    this.setState({
+                        statusMessage: "Patient not found"
+                    })
+                }
+            } else {
+                this.setState({
+                    statusMessage: error.message
+                })
+            }
             this.setState({
                 patient: 'notfound'
             })
-            return
         }
-
-        if (!('data' in patientSearchResult)) {
-            this.setState({
-                patient: 'notfound'
-            })
-            return
-        }
-
-        if (!('id' in patientSearchResult['data'])) {
-            this.setState({
-                patient: 'notfound'
-            })
-            return
-        }
-
-        const patient = await VinaviApi.getPatient(patientSearchResult.data.id)
-
-        if (patient === null) {
-            this.setState({
-                patient: 'notfound'
-            })
-            return
-        }
-
-        this.setState({
-            patient: patient
-        })
-        return
     }
 
     render() {
@@ -138,7 +140,7 @@ class PatientSearch extends React.Component {
             )
         }
 
-        if (this.state.user === 'failed') {
+        if (this.state.user === 'failed' || this.state.user === 'notauthorized') {
             return (
                 <ErrorMessage
                     title="Error"
@@ -146,6 +148,11 @@ class PatientSearch extends React.Component {
                     Go to <a target='_blank' href='https://auth.aasandha.mv/auth/login' className='text-blue-600 hover:underline'>
                         https://auth.aasandha.mv/auth/login
                     </a> to complete login and select service provider.
+                    {this.state.user === 'failed' && (
+                        <div className='p-1.5 bg-red-100 rounded-md'>
+                            {this.state.statusMessage}
+                        </div>
+                    )}
                 </ErrorMessage>
             )
         }
@@ -176,7 +183,7 @@ class PatientSearch extends React.Component {
                     <div className='p-1.5'>
                         {
                             this.state.patient === 'searching' ? 'Searching' :
-                                this.state.patient === 'notfound' ? 'Patient Not Found' :
+                                this.state.patient === 'notfound' ? this.state.statusMessage :
                                     (<br />)
                         }
                     </div>
