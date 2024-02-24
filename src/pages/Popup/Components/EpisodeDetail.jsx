@@ -44,9 +44,9 @@ export default function EpisodeDetailComponent({ episodeId, className, style }) 
 
     useEffect(
         () => {
-            // if (episodeId === null) {
-            //     return
-            // }
+            if (episodeId === null) {
+                return
+            }
 
             (async () => {
                 setError(null);
