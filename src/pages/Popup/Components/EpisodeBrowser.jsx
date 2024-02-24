@@ -16,7 +16,6 @@ class EpisodeBrowser extends React.Component {
             patient: null,
             cases: {},
             filteredCases: {},
-            selectedEpisode: null,
             selectedEpisodeId: null,
             filterText: ''
         };
@@ -48,7 +47,7 @@ class EpisodeBrowser extends React.Component {
             if (this.props.patient.id === prevProps.patient.id) {
                 return
             }
-        } catch(error) {
+        } catch (error) {
             return
         }
 
@@ -78,23 +77,10 @@ class EpisodeBrowser extends React.Component {
         }
     }
 
-    onEpisodeSelected = async (episode) => {
+    onEpisodeSelected = (episode) => {
         this.setState({
-            selectedEpisode: 'loading',
             selectedEpisodeId: episode.id
         })
-
-        try {
-            const episodeDetail = await VinaviApi.getEpisodeDetail(episode.id);
-
-            this.setState({
-                selectedEpisode: episodeDetail
-            })
-        } catch (error) {
-            this.setState({
-                selectedEpisode: 'failed'
-            })
-        }
     }
 
     onFilterChanged = (event) => {
@@ -206,7 +192,7 @@ class EpisodeBrowser extends React.Component {
                         />
                     </div>
                     <EpisodeDetail
-                        episode={this.state.selectedEpisode}
+                        episodeId={this.state.selectedEpisodeId}
                         className='fixed overflow-y-auto overflow-x-hidden'
                         style={{ left: sidebarWidth, top: headerHeight, width: `calc(100vw - ${sidebarWidth})`, height: `calc(100vh - ${headerHeight})` }}
                     />
