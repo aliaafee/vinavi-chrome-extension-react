@@ -14,10 +14,7 @@ class EpisodeBrowser extends React.Component {
         super(props);
         this.state = {
             patient: null,
-            cases: {},
-            filteredCases: {},
             selectedEpisodeId: null,
-            filterText: ''
         };
     }
 
@@ -30,50 +27,7 @@ class EpisodeBrowser extends React.Component {
 
         return {
             patient: props.patient,
-            cases: null,
-            filterCases: null,
-            selectedEpisode: null,
-            selectedEpisodeId: null,
-            filterText: ''
-        }
-    }
-
-    componentDidMount() {
-        this.loadCases();
-    }
-
-    componentDidUpdate(prevProps) {
-        try {
-            if (this.props.patient.id === prevProps.patient.id) {
-                return
-            }
-        } catch (error) {
-            return
-        }
-
-        this.loadCases();
-    }
-
-    async loadCases() {
-        if (this.state.patient === null) {
-            return;
-        }
-
-        this.setState({
-            cases: 'loading'
-        })
-
-        try {
-            const cases = await VinaviApi.getAllCases(this.state.patient.data.id);
-            this.setState({
-                cases: cases,
-                filteredCases: cases
-            })
-        } catch (error) {
-            this.setState({
-                cases: 'failed',
-                filteredCases: 'failed'
-            });
+            selectedEpisodeId: null
         }
     }
 
@@ -81,37 +35,6 @@ class EpisodeBrowser extends React.Component {
         this.setState({
             selectedEpisodeId: episode.id
         })
-    }
-
-    onFilterChanged = (event) => {
-        const filterText = event.target.value;
-        this.setState({
-            filterText: filterText,
-            filteredCases: this.filterCases(filterText)
-        })
-    }
-
-    filterCases(filterText) {
-        if (filterText === "") {
-            return this.state.cases
-        }
-        const filteredData = this.state.cases.data.filter((patientCase) => {
-            return patientCase.relationships.episodes.data.reduce((accumulator, episode) => {
-                const name = patientCase.relationships.doctor.data.attributes.fullname;
-                return accumulator
-                    || episode.relationships.doctor.data.attributes.fullname.toUpperCase().includes(filterText.toUpperCase())
-                    || episode.attributes.created_at.includes(filterText)
-            }, false)
-        });
-
-        return {
-            data: filteredData,
-            meta: {
-                current_page: 1,
-                last_page: 1
-            }
-        }
-
     }
 
     getAge(dateOfBirth) {
@@ -125,30 +48,6 @@ class EpisodeBrowser extends React.Component {
     }
 
     render() {
-        if (this.state.cases === null) {
-            return (
-                <ErrorMessage
-                    title="No Episodes"
-                    message="No episodes loaded." />
-            )
-        }
-
-        if (this.state.cases === 'loading') {
-            return (
-                <LoadingSpinner
-                    message="Loading Episodes."
-                />
-            )
-        }
-
-        if (this.state.cases === 'failed') {
-            return (
-                <ErrorMessage
-                    title="Error"
-                    message="Failed To Load Episodes." />
-            )
-        }
-
         const headerHeight = "86px";
         const sidebarWidth = "200px";
 
@@ -173,22 +72,11 @@ class EpisodeBrowser extends React.Component {
                 </div>
                 <div className=''>
                     <div className='flex flex-col fixed bg-gray-200' style={{ top: headerHeight, height: `calc(100vh - ${headerHeight})`, width: sidebarWidth }}>
-                        <div className='px-1.5 pt-1.5 pb-0 font-bold bg-gray-300'>
-                            Episodes
-                        </div>
-                        <div className='flex flex-col p-1.5 bg-gray-300'>
-                            <input
-                                placeholder="Filter"
-                                value={this.state.filterText}
-                                onChange={this.onFilterChanged}
-                                className='p-1.5 rounded-md border-0 focus:outline-2 focus:outline-red-300'
-                            />
-                        </div>
                         <CasesList
-                            cases={this.state.filteredCases}
+                            patientId={this.state.patient.data.id}
                             onEpisodeSelected={this.onEpisodeSelected}
                             selectedEpisodeId={this.state.selectedEpisodeId}
-                            className='overflow-y-auto overflow-x-hidden'
+                            style={{height: `calc(100vh - ${headerHeight})`}}
                         />
                     </div>
                     <EpisodeDetail

@@ -1,41 +1,116 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import '../../../styles.css';
 
+import VinaviApi from '../../../api/VinaviApi'
+import LoadingSpinner from './LoadingSpinner';
+import ErrorMessage from './ErrorMessage';
 
-class CasesListComponent extends React.Component {
-    render() {
-        if (this.props.cases === null) {
-            return (
-                <div className={this.props.className}>Not Found</div>
-            )
-        }
-        if (this.props.cases === 'failed') {
-            return (
-                <div className={this.props.className}>Failed to load</div>
-            )
-        }
-        if (!('data' in this.props.cases)) {
-            return (
-                <div className={this.props.className}>Loading..</div>
-            )
-        }
 
-        const liClassName = (episodeId) => ([
-            "flex flex-col rounded-md cursor-pointer divide-solid divide-y divide-x-0",
-            this.props.selectedEpisodeId === episodeId
-                ? "bg-red-300 divide-black"
-                : "bg-gray-100 hover:bg-red-100 divide-gray-300"
-        ].join(" "));
+export default function CasesListComponent({ patientId, selectedEpisodeId, onEpisodeSelected, className, style }) {
+    const [filterText, setFilterText] = useState("");
+    const [cases, setCases] = useState(null);
+    const [filteredCases, setFilteredCases] = useState(null);
+    const [error, setError] = useState(null);
+    const [isLoading, setLoading] = useState(false);
 
+    useEffect(
+        () => {
+            if (patientId === null) {
+                return;
+            }
+
+            (async () => {
+                setError(null);
+                try {
+                    setLoading(true);
+
+                    const loadedCases = await VinaviApi.getAllCases(patientId);
+
+                    setCases(loadedCases.data);
+                    setFilteredCases(loadedCases.data);
+                } catch (error) {
+                    setError(error);
+                } finally {
+                    setLoading(false);
+                }
+            })();
+        },
+        [patientId]
+    )
+
+    useEffect(
+        () => {
+            if (filterText === "") {
+                return;
+            }
+
+            const newFilteredCases = cases.filter((patientCase) => {
+                return patientCase.relationships.episodes.data.reduce((accumulator, episode) => {
+                    const name = patientCase.relationships.doctor.data.attributes.fullname;
+                    return accumulator
+                        || episode.relationships.doctor.data.attributes.fullname.toUpperCase().includes(filterText.toUpperCase())
+                        || episode.attributes.created_at.includes(filterText)
+                }, false)
+            })
+
+            setFilteredCases(newFilteredCases);
+        },
+        [filterText]
+    )
+
+    if (isLoading) {
         return (
-            <div className={this.props.className}>
+            <div className={className} style={style}>
+                <LoadingSpinner />
+            </div>
+        )
+    }
+
+    if (error) {
+        return (
+            <div className={className} style={style}>
+                <ErrorMessage
+                    title="Error"
+                    message={error.message}
+                />
+            </div>
+        )
+    }
+
+    if (!filteredCases) {
+        return (
+            <div className={className}>No Episodes</div>
+        )
+    }
+
+    const liClassName = (episodeId) => ([
+        "flex flex-col rounded-md cursor-pointer divide-solid divide-y divide-x-0",
+        selectedEpisodeId === episodeId
+            ? "bg-red-300 divide-black"
+            : "bg-gray-100 hover:bg-red-100 divide-gray-300"
+    ].join(" "));
+
+    return (
+        <div className='flex flex-col' style={style}>
+            <div className='px-1.5 pt-1.5 pb-0 font-bold bg-gray-300'>
+                Episodes
+            </div>
+            <div className='flex flex-col p-1.5 bg-gray-300'>
+                <input
+                    placeholder="Filter"
+                    value={filterText}
+                    onChange={(event) => { setFilterText(event.target.value) }}
+                    className='p-1.5 rounded-md border-0 focus:outline-2 focus:outline-red-300'
+                />
+            </div>
+            <div className='overflow-y-auto overflow-x-hidden ' >
                 <ul className='list-none m-0 p-1.5 flex flex-col gap-1.5'>
-                    {this.props.cases.data.map((caseItem, caseIndex) => (
+                    {filteredCases.map((caseItem, caseIndex) => (
                         caseItem.relationships.episodes.data.map((episode, episodeIndex) => (
                             <li
                                 key={episodeIndex}
-                                onClick={() => this.props.onEpisodeSelected(episode)}
+                                onClick={() => onEpisodeSelected(episode)}
                                 className={liClassName(episode.id)}>
 
                                 <div className='rounded-t-md p-1.5'>
@@ -50,8 +125,6 @@ class CasesListComponent extends React.Component {
                     ))}
                 </ul>
             </div >
-        );
-    }
+        </div>
+    );
 }
-
-export default CasesListComponent;
