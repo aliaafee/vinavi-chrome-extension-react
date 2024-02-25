@@ -20,7 +20,7 @@ export default function PrescriptionList({ prescriptions }) {
                                 if (prescription_medicine.relationships['preferred-medicine'] === null) {
                                     return (
                                         <li key={medicineIndex}>
-                                            <span class="font-bold">{prescription_medicine.attributes.name} </span>
+                                            <span className="font-bold">{prescription_medicine.attributes.name} </span>
                                             <span>{prescription_medicine.attributes.instructions}</span>
                                         </li>
                                     )
@@ -29,7 +29,7 @@ export default function PrescriptionList({ prescriptions }) {
                                 return (
                                     <li key={medicineIndex}>
                                         <span>{preferred_medicine.attributes.preparation} </span>
-                                        <span class="font-bold">{preferred_medicine.attributes.name} </span>
+                                        <span className="font-bold">{preferred_medicine.attributes.name} </span>
                                         <span>{preferred_medicine.attributes.strength} </span>
                                         <span>{prescription_medicine.attributes.instructions} </span>
                                     </li>
