@@ -2,23 +2,19 @@ import React from 'react';
 
 import '../../../styles.css';
 
-class ErrorMessage extends React.Component {
-    render() {
-        return (
-            <div className='w-full h-full flex items-center justify-center'>
-                <div>
-                    <div className='text-lg text-center w-80'>{this.props.title}</div>
-                    <div className='text-center w-80'>{this.props.message}</div>
-                    {
-                        this.props.children ?
-                            (<div className='text-center w-80'>{this.props.children}</div>) :
-                            ""
-                    }
+export default function ErrorMessage({ title, message, children }) {
+    return (
+        <div className='w-full h-full flex items-center justify-center'>
+            <div>
+                <div className='text-lg text-center w-80'>{title}</div>
+                <div className='text-center w-80'>{message}</div>
+                {
+                    children ?
+                        (<div className='text-center w-80'>{children}</div>) :
+                        ""
+                }
 
-                </div>
             </div>
-        )
-    }
+        </div>
+    )
 }
-
-export default ErrorMessage;
