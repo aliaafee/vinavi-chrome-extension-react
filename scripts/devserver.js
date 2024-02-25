@@ -8,8 +8,9 @@ const Webpack = require('webpack');
 const path = require("path");
 const config = require('../webpack.config');
 
-// Development mode uses eval which is not allowed in chrome extension popup
-config.mode = 'production';
+config.mode = 'development';
+
+config.devtool = 'cheap-module-source-map';
 
 // Hide errors due to large size of development bundle
 config.performance = {
