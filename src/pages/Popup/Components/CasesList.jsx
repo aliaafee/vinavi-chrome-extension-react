@@ -91,6 +91,18 @@ export default function CasesListComponent({ patientId, selectedEpisodeId, onEpi
             : "bg-gray-100 hover:bg-red-100 divide-gray-300"
     ].join(" "));
 
+    const parseDoctorFullName = (episode) => {
+        if ('relationships' in episode &&
+            'doctor' in episode.relationships &&
+            'data' in episode.relationships.doctor &&
+            'attributes' in episode.relationships.doctor.data &&
+            'fullname' in episode.relationships.doctor.data.attributes) {
+            return episode.relationships.doctor.data.attributes.fullname;
+        }
+        console.log(episode);
+        return "?"
+    }
+
     return (
         <div className='flex flex-col' style={style}>
             <div className='px-1.5 pt-1.5 pb-0 font-bold bg-gray-300'>
@@ -117,7 +129,7 @@ export default function CasesListComponent({ patientId, selectedEpisodeId, onEpi
                                     {episode.attributes.created_at}
                                 </div>
                                 <div className='rounded-b-md font-bold p-1.5'>
-                                    Dr. {episode.relationships.doctor.data.attributes.fullname}
+                                    Dr. {parseDoctorFullName(episode)}
                                 </div>
 
                             </li>

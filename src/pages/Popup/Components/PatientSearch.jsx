@@ -71,7 +71,7 @@ export default function PatientSearch() {
         )
     }
 
-    if (!(user || serviceProvider)) {
+    if (!(user && serviceProvider)) {
         return (
             <ErrorMessage
                 title="Error"
@@ -90,12 +90,10 @@ export default function PatientSearch() {
 
     if (error) {
         return (
-            <div>
-                <ErrorMessage
-                    title="Error"
-                    message={error.message}
-                />
-            </div>
+            <ErrorMessage
+                title="Error"
+                message={error.message}
+            />
         )
     }
 
