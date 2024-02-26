@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
-import '../../../styles.css';
+import "../../../styles.css";
 
-import VinaviApi from '../../../api/VinaviApi'
-import EpisodeBrowser from './EpisodeBrowser';
-import LoadingSpinner from './LoadingSpinner';
-import ErrorMessage from './ErrorMessage';
+import VinaviApi from "../../../api/VinaviApi";
+import EpisodeBrowser from "./EpisodeBrowser";
+import LoadingSpinner from "./LoadingSpinner";
+import ErrorMessage from "./ErrorMessage";
 
 export default function PatientSearch() {
     const [user, setUser] = useState(null);
@@ -17,141 +17,129 @@ export default function PatientSearch() {
     const [isSearching, setIsSearching] = useState(false);
     const [searchError, setSearchError] = useState(null);
 
-    useEffect(
-        () => {
-            (async () => {
-                setError(null);
-                try {
-                    setLoading(true);
+    useEffect(() => {
+        (async () => {
+            setError(null);
+            try {
+                setLoading(true);
 
-                    const loggedUser = await VinaviApi.getAuthenticatedUser();
-                    setUser(loggedUser);
+                const loggedUser = await VinaviApi.getAuthenticatedUser();
+                setUser(loggedUser);
 
-                    const selectedServiceProvider = await VinaviApi.getServiceProvider();
-                    setServiceProvider(selectedServiceProvider);
+                const selectedServiceProvider =
+                    await VinaviApi.getServiceProvider();
+                setServiceProvider(selectedServiceProvider);
 
-                    const currentPatientId = await VinaviApi.getCurrentPatientId();
+                const currentPatientId = await VinaviApi.getCurrentPatientId();
 
-                    if (currentPatientId !== null) {
-                        const currentPatient = await VinaviApi.getPatient(currentPatientId);
-                        setPatient(currentPatient);
-                    }
-
-                } catch (error) {
-                    setError(error);
-                } finally {
-                    setLoading(false);
+                if (currentPatientId !== null) {
+                    const currentPatient = await VinaviApi.getPatient(
+                        currentPatientId
+                    );
+                    setPatient(currentPatient);
                 }
-
-            })();
-        },
-        []
-    )
+            } catch (error) {
+                setError(error);
+            } finally {
+                setLoading(false);
+            }
+        })();
+    }, []);
 
     const onSearch = async (event) => {
         setSearchError(null);
         try {
-            setIsSearching(true)
+            setIsSearching(true);
 
-            const patientSearchResult = await VinaviApi.searchPatientByNationalIdentification(searchText);
+            const patientSearchResult =
+                await VinaviApi.searchPatientByNationalIdentification(
+                    searchText
+                );
 
-            const currentPatient = await VinaviApi.getPatient(patientSearchResult.data.id);
+            const currentPatient = await VinaviApi.getPatient(
+                patientSearchResult.data.id
+            );
 
-            setPatient(currentPatient)
+            setPatient(currentPatient);
         } catch (error) {
-            setSearchError(error)
+            setSearchError(error);
         } finally {
-            setIsSearching(false)
+            setIsSearching(false);
         }
-    }
+    };
 
     if (isLoading) {
-        return (
-            <LoadingSpinner />
-        )
+        return <LoadingSpinner />;
     }
 
     if (!(user && serviceProvider)) {
         return (
-            <ErrorMessage
-                title="Error"
-                message="Not Authorized.">
-                Go to <a target='_blank' href='https://auth.aasandha.mv/auth/login' className='text-blue-600 hover:underline'>
+            <ErrorMessage title="Error" message="Not Authorized.">
+                Go to{" "}
+                <a
+                    target="_blank"
+                    href="https://auth.aasandha.mv/auth/login"
+                    className="text-blue-600 hover:underline"
+                >
                     https://auth.aasandha.mv/auth/login
-                </a> to complete login and select service provider.
+                </a>{" "}
+                to complete login and select service provider.
                 {error && (
-                    <div className='p-1.5 bg-red-100 rounded-md'>
+                    <div className="p-1.5 bg-red-100 rounded-md">
                         {error.message}
                     </div>
                 )}
             </ErrorMessage>
-        )
+        );
     }
 
     if (error) {
-        return (
-            <ErrorMessage
-                title="Error"
-                message={error.message}
-            />
-        )
+        return <ErrorMessage title="Error" message={error.message} />;
     }
 
     if (patient) {
-        return (
-            <EpisodeBrowser
-                patient={patient} />
-        )
+        return <EpisodeBrowser patient={patient} />;
     }
 
     return (
-        <div className='w-full h-full flex flex-col items-center justify-center'>
-            <div className='logo w-48 h-48'>
-
-            </div>
-            <div className='drop-shadow-md flex p-2 gap-2 bg-gray-300 rounded-md'>
+        <div className="w-full h-full flex flex-col items-center justify-center">
+            <div className="logo w-48 h-48"></div>
+            <div className="drop-shadow-md flex p-2 gap-2 bg-gray-300 rounded-md">
                 <input
                     placeholder="Patient Identification"
                     value={searchText}
                     onChange={(event) => {
-                        setSearchText(event.target.value)
+                        setSearchText(event.target.value);
                     }}
                     onKeyUp={(event) => {
-                        if (event.key === 'Enter') {
+                        if (event.key === "Enter") {
                             onSearch();
                         }
                     }}
-                    className='p-1.5 rounded-md border-0 focus:outline-2 focus:outline-red-300'
+                    className="p-1.5 rounded-md border-0 focus:outline-2 focus:outline-red-300"
                 />
                 <button
                     onClick={onSearch}
-                    className='w-12 p-1.5 rounded-md bg-red-300 border-0 focus:outline-2 focus:outline-red-300 hover:bg-red-400'>
-                    {
-                        isSearching ? (
-                            <LoadingSpinner size='small' />
-                        ) : (
-                            'Go'
-                        )
-                    }
+                    className="w-12 p-1.5 rounded-md bg-red-300 border-0 focus:outline-2 focus:outline-red-300 hover:bg-red-400"
+                >
+                    {isSearching ? <LoadingSpinner size="small" /> : "Go"}
                 </button>
             </div>
-            <div className='p-1.5'>
-                {
-                    searchError ? (
-                        searchError.cause ? (
-                            searchError.cause.status === 404 ? (
-                                'Patient not found'
-                            ) : (
-                                searchError.message
-                            )
+            <div className="p-1.5">
+                {searchError ? (
+                    searchError.cause ? (
+                        searchError.cause.status === 404 ? (
+                            "Patient not found"
                         ) : (
                             searchError.message
                         )
                     ) : (
-                        <br />
+                        searchError.message
                     )
-                }
+                ) : (
+                    <br />
+                )}
             </div>
         </div>
-    )
+    );
 }
