@@ -244,6 +244,14 @@ async function getServiceProvider() {
 
 
 async function getCurrentPatientId() {
+    const currentUrl = window.location.href;
+
+    const patientIdmatch = currentUrl.match(/\/patients\/(\d+)/);
+
+    if (patientIdmatch) {
+        return patientIdmatch[1];
+    }
+
     const activeTab = await getActiveTab();
     try {
         return await chrome.tabs.sendMessage(
@@ -253,7 +261,7 @@ async function getCurrentPatientId() {
             }
         );
     } catch (error) {
-        throw error
+        return null
     }
 }
 

@@ -7,6 +7,37 @@ import EpisodeBrowser from "./EpisodeBrowser";
 import LoadingSpinner from "./LoadingSpinner";
 import ErrorMessage from "./ErrorMessage";
 
+function ToolBar({ patient }) {
+    const onNewWindow = () => {
+        const url = patient ? (
+            `popup.html#/patients/${patient.data.id}`
+        ) : (
+            `popup.html`
+        );
+        chrome.windows.create({
+            url: chrome.runtime.getURL(url),
+            type: "popup"
+        }, (window) => {
+            window.location = "Yo"
+        })
+    }
+
+    return (
+        <div className="top-0 left-0 fixed flex justify-end w-full">
+            <button
+                onClick={onNewWindow}
+                title="Open New Window"
+                className="new-window bg-black"
+                style={{
+                    left: "calc(100% - 48px)"
+                }}
+            >
+
+            </button>
+        </div>
+    )
+}
+
 export default function PatientSearch() {
     const [user, setUser] = useState(null);
     const [serviceProvider, setServiceProvider] = useState(null);
@@ -98,7 +129,12 @@ export default function PatientSearch() {
     }
 
     if (patient) {
-        return <EpisodeBrowser patient={patient} />;
+        return (
+            <div className="w-full h-full flex flex-col">
+                <EpisodeBrowser patient={patient} />
+                <ToolBar patient={patient}/>
+            </div >
+        );
     }
 
     return (
@@ -140,6 +176,7 @@ export default function PatientSearch() {
                     <br />
                 )}
             </div>
+            <ToolBar />
         </div>
     );
 }

@@ -62,7 +62,7 @@ export default function EpisodeBrowser({ patient }) {
                 </div>
                 <EpisodeDetail
                     episodeId={selectedEpisodeId}
-                    className="fixed overflow-y-auto overflow-x-hidden"
+                    className="fixed overflow-y-auto overflow-x-hidden bg-white"
                     style={{
                         left: sidebarWidth,
                         top: headerHeight,

@@ -94,8 +94,8 @@ export default function EpisodeDetailComponent({
     }
 
     return (
-        <div className={className} style={style}>
-            <div className="p-2">
+        <div className={`${className} flex justify-center`} style={style}>
+            <div className="p-2 w-full max-w-lg">
                 <h2 className="text-lg mb-2">
                     <span>Episode</span>
                     <a
