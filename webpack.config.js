@@ -1,4 +1,4 @@
-// Based on https://github.com/lxieyang/chrome-extension-boilerplate-reacthttps://github.com/lxieyang/chrome-extension-boilerplate-react
+// Based on https://github.com/lxieyang/chrome-extension-boilerplate-react
 
 const path = require("path");
 const CopyWebpackPlugin = require("copy-webpack-plugin");

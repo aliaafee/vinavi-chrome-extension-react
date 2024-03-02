@@ -4,7 +4,7 @@
   "description": "Chrome extension to more conveniently browse episodes on Vinavi",
   "scripts": {
     "start": "node scripts/devserver.js",
-    "build": "webpack"
+    "build": "node scripts/build.js"
   },
   "keywords": [],
   "author": "",
@@ -36,6 +36,7 @@
     "terser-webpack-plugin": "^5.3.10",
     "webpack": "^5.90.1",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^5.0.1"
+    "webpack-dev-server": "^5.0.1",
+    "zip-webpack-plugin": "^4.0.1"
   }
 }
