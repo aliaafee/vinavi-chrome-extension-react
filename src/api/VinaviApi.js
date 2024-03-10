@@ -244,6 +244,9 @@ async function getServiceProvider() {
 
 
 async function getCurrentPatientId() {
+    const activeTab = await getActiveTab();
+
+    // Check to see if the patient id is provided in the popup url
     const currentUrl = window.location.href;
 
     const patientIdmatch = currentUrl.match(/\/patients\/(\d+)/);
@@ -252,7 +255,25 @@ async function getCurrentPatientId() {
         return patientIdmatch[1];
     }
 
-    const activeTab = await getActiveTab();
+    try {
+        // Try to look for patient national id in page
+        const patientNationalId = await chrome.tabs.sendMessage(
+            activeTab.id,
+            {
+                "action": "getCurrentPatientNationalId"
+            }
+        );
+
+        if (patientNationalId) {
+            const currentPatient = await searchPatientByNationalIdentification(patientNationalId);
+            return currentPatient.data.id;
+        }
+
+    } catch (error) {
+        ;
+    }
+
+    
     try {
         return await chrome.tabs.sendMessage(
             activeTab.id,

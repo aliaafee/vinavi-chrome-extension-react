@@ -6,6 +6,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         })();
         return true;
     }
+
+    if (request.action === "getCurrentPatientNationalId") {
+        (async () => {
+            const patientId = await getCurrentPatientNationalId();
+            sendResponse(patientId);
+        })();
+        return true;
+    }
 });
 
 async function getCurrentPatientId() {
@@ -18,4 +26,18 @@ async function getCurrentPatientId() {
     }
 
     return null;
+}
+
+async function getCurrentPatientNationalId() {
+    const infoElement = document.getElementById("patientFlag");
+    
+    if (!infoElement) {
+        return null;
+    }
+
+    const nidElement = infoElement.childNodes[3]
+
+    const nid = nidElement.innerText
+
+    return nid;
 }
