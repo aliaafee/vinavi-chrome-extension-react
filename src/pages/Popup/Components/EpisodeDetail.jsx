@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+// import { JSONTree } from "react-json-tree";
 
 import "../../../styles.css";
 
@@ -32,6 +33,15 @@ function EpisodeInformation({ episode }) {
                 <span className="font-bold pl-1.5">
                     Dr.{" "}
                     {episode.data.relationships.doctor.data.attributes.fullname}
+                </span>
+            </li>
+            <li className="flex flex-col">
+                <span className="capitalize">service provider</span>
+                <span className="font-bold pl-1.5">
+                    {
+                        episode.data.relationships["service-provider"].data
+                            .attributes.name
+                    }
                 </span>
             </li>
         </ul>
@@ -115,6 +125,9 @@ export default function EpisodeDetailComponent({
                         episode.data.relationships.prescriptions.data
                     }
                 />
+                {/* <div className="rounded-md bg-gray-100 p-1.5 mt-5">
+                    <JSONTree data={episode} />
+                </div> */}
             </div>
         </div>
     );
