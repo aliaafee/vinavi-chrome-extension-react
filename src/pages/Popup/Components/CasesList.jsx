@@ -6,7 +6,7 @@ import VinaviApi from "../../../api/VinaviApi";
 import LoadingSpinner from "./LoadingSpinner";
 import ErrorMessage from "./ErrorMessage";
 
-export default function CasesListComponent({
+export default function CasesList({
     patientId,
     selectedEpisodeId,
     onEpisodeSelected,
