@@ -10,8 +10,8 @@ export default function CasesList({
     patientId,
     selectedEpisodeId,
     onEpisodeSelected,
-    className,
-    style,
+    className = "",
+    style = {},
 }) {
     const [filterText, setFilterText] = useState("");
     const [cases, setCases] = useState(null);
@@ -110,7 +110,7 @@ export default function CasesList({
     };
 
     return (
-        <div className="flex flex-col" style={style}>
+        <div className="flex flex-col bg-gray-200" style={style}>
             <div className="px-1.5 pt-1.5 pb-0 font-bold bg-gray-300">
                 Episodes
             </div>

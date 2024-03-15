@@ -4,6 +4,7 @@ import "../../../styles.css";
 
 import CasesList from "./CasesList";
 import EpisodeDetail from "./EpisodeDetail";
+import VerticalSplitter from "./VerticalSplitter";
 
 export default function EpisodeBrowser({ patient }) {
     const [selectedEpisodeId, setSelectedEpisodeId] = useState(null);
@@ -30,8 +31,8 @@ export default function EpisodeBrowser({ patient }) {
     }
 
     return (
-        <div className="flex flex-col">
-            <div className="fixed bg-gray-200 grid grid-cols-2 w-screen gap-1.5 p-1.5">
+        <div className="flex flex-col grow overflow-auto">
+            <div className="bg-gray-200 grid grid-cols-2 w-screen gap-1.5 p-1.5">
                 <div className="col-span-2 text-lg">
                     {patient.data.attributes.patient_name}
                 </div>
@@ -44,33 +45,15 @@ export default function EpisodeBrowser({ patient }) {
                 <div>{patient.data.attributes.national_identification}</div>
                 <div>Birth Date {patient.data.attributes.birth_date}</div>
             </div>
-            <div className="">
-                <div
-                    className="flex flex-col fixed bg-gray-200"
-                    style={{
-                        top: headerHeight,
-                        height: `calc(100vh - ${headerHeight})`,
-                        width: sidebarWidth,
-                    }}
-                >
-                    <CasesList
-                        patientId={patient.data.id}
-                        onEpisodeSelected={onEpisodeSelected}
-                        selectedEpisodeId={selectedEpisodeId}
-                        style={{ height: `calc(100vh - ${headerHeight})` }}
-                    />
-                </div>
-                <EpisodeDetail
-                    episodeId={selectedEpisodeId}
-                    className="fixed overflow-y-auto overflow-x-hidden bg-white"
-                    style={{
-                        left: sidebarWidth,
-                        top: headerHeight,
-                        width: `calc(100vw - ${sidebarWidth})`,
-                        height: `calc(100vh - ${headerHeight})`,
-                    }}
+            <VerticalSplitter>
+                <CasesList
+                    patientId={patient.data.id}
+                    onEpisodeSelected={onEpisodeSelected}
+                    selectedEpisodeId={selectedEpisodeId}
+                    className="grow"
                 />
-            </div>
+                <EpisodeDetail episodeId={selectedEpisodeId} className="grow" />
+            </VerticalSplitter>
         </div>
     );
 }

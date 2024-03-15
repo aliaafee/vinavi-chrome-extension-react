@@ -50,8 +50,8 @@ function EpisodeInformation({ episode }) {
 
 export default function EpisodeDetailComponent({
     episodeId,
-    className,
-    style,
+    className = "",
+    style = {},
 }) {
     const [episode, setEpisode] = useState(null);
     const [error, setError] = useState(null);
@@ -81,7 +81,7 @@ export default function EpisodeDetailComponent({
 
     if (isLoading) {
         return (
-            <div className={className} style={style}>
+            <div className={`${className} flex`} style={style}>
                 <LoadingSpinner />
             </div>
         );
@@ -89,7 +89,7 @@ export default function EpisodeDetailComponent({
 
     if (error) {
         return (
-            <div className={className} style={style}>
+            <div className={`${className} flex`} style={style}>
                 <ErrorMessage title="Error" message={error.message} />
             </div>
         );
@@ -97,7 +97,7 @@ export default function EpisodeDetailComponent({
 
     if (!episode) {
         return (
-            <div className={className} style={style}>
+            <div className={`${className} flex`} style={style}>
                 <div className="logo w-full h-full opacity-10"></div>
             </div>
         );
