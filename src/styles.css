@@ -22,6 +22,15 @@
     z-index: 1000;
 }
 
+.user {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    mask: url("./images/user-line.svg") no-repeat center;
+    mask-size: contain;
+    z-index: 1000;
+}
+
 .logo {
     background: url("./images/icon.svg") no-repeat center;
 }

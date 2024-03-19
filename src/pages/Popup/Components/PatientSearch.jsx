@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 
 import "../../../styles.css";
 
@@ -6,41 +6,46 @@ import VinaviApi from "../../../api/VinaviApi";
 import EpisodeBrowser from "./EpisodeBrowser";
 import LoadingSpinner from "./LoadingSpinner";
 import ErrorMessage from "./ErrorMessage";
+import AuthContext from "./AuthContext";
 
-function ToolBar({ patient }) {
+function ToolBar({ patient, auth }) {
     const onNewWindow = () => {
-        const url = patient ? (
-            `popup.html#/patients/${patient.data.id}`
-        ) : (
-            `popup.html`
+        const url = patient
+            ? `popup.html#/patients/${patient.data.id}`
+            : `popup.html`;
+        chrome.windows.create(
+            {
+                url: chrome.runtime.getURL(url),
+                type: "popup",
+            },
+            (window) => {
+                window.location = "Yo";
+            }
         );
-        chrome.windows.create({
-            url: chrome.runtime.getURL(url),
-            type: "popup"
-        }, (window) => {
-            window.location = "Yo"
-        })
-    }
+    };
+
+    console.log(auth);
 
     return (
-        <div className="top-0 left-0 fixed flex justify-end w-full">
+        <div className="items-center top-0 left-0 fixed flex justify-end w-full gap-4 pr-1.5">
+            <div className="flex items-center gap-1.5 px-1.5 py-1.5 rounded-b-md bg-gray-300">
+                <div className="user bg-black"></div>
+                {auth.user.data.attributes.full_name}
+            </div>
             <button
                 onClick={onNewWindow}
                 title="Open New Window"
                 className="new-window bg-black"
                 style={{
-                    left: "calc(100% - 48px)"
+                    left: "calc(100% - 48px)",
                 }}
-            >
-
-            </button>
+            ></button>
         </div>
-    )
+    );
 }
 
 export default function PatientSearch() {
-    const [user, setUser] = useState(null);
-    const [serviceProvider, setServiceProvider] = useState(null);
+    const auth = useContext(AuthContext);
     const [patient, setPatient] = useState(null);
     const [error, setError] = useState(null);
     const [isLoading, setLoading] = useState(false);
@@ -53,13 +58,6 @@ export default function PatientSearch() {
             setError(null);
             try {
                 setLoading(true);
-
-                const loggedUser = await VinaviApi.getAuthenticatedUser();
-                setUser(loggedUser);
-
-                const selectedServiceProvider =
-                    await VinaviApi.getServiceProvider();
-                setServiceProvider(selectedServiceProvider);
 
                 const currentPatientId = await VinaviApi.getCurrentPatientId();
 
@@ -103,27 +101,6 @@ export default function PatientSearch() {
         return <LoadingSpinner />;
     }
 
-    if (!(user && serviceProvider)) {
-        return (
-            <ErrorMessage title="Error" message="Not Authorized.">
-                Go to{" "}
-                <a
-                    target="_blank"
-                    href="https://auth.aasandha.mv/auth/login"
-                    className="text-blue-600 hover:underline"
-                >
-                    https://auth.aasandha.mv/auth/login
-                </a>{" "}
-                to complete login and select service provider.
-                {error && (
-                    <div className="p-1.5 bg-red-100 rounded-md">
-                        {error.message}
-                    </div>
-                )}
-            </ErrorMessage>
-        );
-    }
-
     if (error) {
         return <ErrorMessage title="Error" message={error.message} />;
     }
@@ -132,8 +109,8 @@ export default function PatientSearch() {
         return (
             <div className="w-full h-full flex flex-col">
                 <EpisodeBrowser patient={patient} />
-                <ToolBar patient={patient}/>
-            </div >
+                <ToolBar patient={patient} auth={auth} />
+            </div>
         );
     }
 
@@ -176,7 +153,7 @@ export default function PatientSearch() {
                     <br />
                 )}
             </div>
-            <ToolBar />
+            <ToolBar auth={auth} />
         </div>
     );
 }

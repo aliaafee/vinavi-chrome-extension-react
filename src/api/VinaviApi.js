@@ -34,6 +34,45 @@ async function getResource(url) {
     }
 }
 
+async function postResource(url, data) {
+    try {
+        const response = await fetch(url, {
+            method: "POST", // *GET, POST, PUT, DELETE, etc.
+            mode: "cors", // no-cors, *cors, same-origin
+            cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: "same-origin", // include, *same-origin, omit
+            headers: {
+                "Content-Type": "application/json",
+                // 'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            redirect: "follow", // manual, *follow, error
+            referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+            body: JSON.stringify(data), // body data type must match "Content-Type" header
+        });
+
+        if (!response.ok) {
+            throw new Error(
+                `Could not post resource, ${response.status} ${response.statusText}`,
+                {
+                    cause: response,
+                }
+            );
+        }
+    } catch (error) {
+        if (error.cause) {
+            throw new Error(
+                `Could not fetch resource, ${error.cause.status} ${error.cause.statusText}`,
+                {
+                    cause: error.cause,
+                }
+            );
+        }
+        throw new Error(`Error, ${error.message}`, {
+            cause: null,
+        });
+    }
+}
+
 function processRelationshipItem(relationshipItem, includedMap, depth) {
     if (!(relationshipItem.type in includedMap)) {
         return relationshipItem;
@@ -220,7 +259,9 @@ async function searchPatientByNationalIdentification(nationalIdentification) {
 
 async function getAuthenticatedUser() {
     try {
-        return await getResource(`${getApiUrl()}/users/authenticated`);
+        return await getResource(
+            `${getApiUrl()}/users/authenticated?include=employee,professional.service-providers,permissions,roles.permissions`
+        );
     } catch (error) {
         throw new Error(`Could not get authenticated user, ${error.message}`, {
             cause: error.cause,
@@ -303,6 +344,16 @@ async function getAllCases(patientId, page = 1) {
     }
 }
 
+async function setServiceProvider(serviceProviderId) {
+    if (!serviceProviderId) {
+        throw new Error("No valid service provider Id Given");
+    }
+
+    postResource(`${apiServer}/service-provider`, {
+        data: { id: serviceProviderId },
+    });
+}
+
 export default {
     getAllCases: getAllCases,
     getCases: getCases,
@@ -313,4 +364,5 @@ export default {
         searchPatientByNationalIdentification,
     getAuthenticatedUser: getAuthenticatedUser,
     getServiceProvider: getServiceProvider,
+    setServiceProvider: setServiceProvider,
 };
