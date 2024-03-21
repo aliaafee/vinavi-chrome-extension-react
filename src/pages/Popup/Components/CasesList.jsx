@@ -43,25 +43,43 @@ export default function CasesList({
 
     useEffect(() => {
         if (filterText === "") {
+            setFilteredCases(cases);
             return;
         }
 
+        // const newFilteredCases = cases.filter((patientCase) => {
+        //     return patientCase.relationships.episodes.data.reduce(
+        //         (accumulator, episode) => {
+        //             try {
+        //                 const name =
+        //                     patientCase.relationships.doctor.data.attributes
+        //                         .fullname;
+        //                 return (
+        //                     accumulator ||
+        //                     episode.relationships.doctor.data.attributes.fullname
+        //                         .toUpperCase()
+        //                         .includes(filterText.toUpperCase()) ||
+        //                     episode.attributes.created_at.includes(filterText)
+        //                 );
+        //             } catch (error) {
+        //                 return accumulator;
+        //             }
+        //         },
+        //         false
+        //     );
+        // });
+
         const newFilteredCases = cases.filter((patientCase) => {
-            return patientCase.relationships.episodes.data.reduce(
-                (accumulator, episode) => {
-                    const name =
-                        patientCase.relationships.doctor.data.attributes
-                            .fullname;
-                    return (
-                        accumulator ||
-                        episode.relationships.doctor.data.attributes.fullname
-                            .toUpperCase()
-                            .includes(filterText.toUpperCase()) ||
-                        episode.attributes.created_at.includes(filterText)
-                    );
-                },
-                false
-            );
+            try {
+                return (
+                    patientCase.relationships.doctor.data.attributes.fullname
+                        .toUpperCase()
+                        .includes(filterText.toUpperCase()) ||
+                    patientCase.attributes.created_at.includes(filterText)
+                );
+            } catch (error) {
+                return false;
+            }
         });
 
         setFilteredCases(newFilteredCases);
@@ -89,23 +107,23 @@ export default function CasesList({
 
     const liClassName = (episodeId) =>
         [
-            "flex flex-col rounded-md cursor-pointer divide-solid divide-y divide-x-0",
+            "flex flex-col rounded-md cursor-pointer",
             selectedEpisodeId === episodeId
-                ? "bg-red-300 divide-black"
-                : "bg-gray-100 hover:bg-red-100 divide-gray-300",
+                ? "bg-red-300"
+                : "bg-gray-100 hover:bg-red-100",
         ].join(" ");
 
-    const parseDoctorFullName = (episode) => {
+    const parseDoctorFullName = (item) => {
         if (
-            "relationships" in episode &&
-            "doctor" in episode.relationships &&
-            "data" in episode.relationships.doctor &&
-            "attributes" in episode.relationships.doctor.data &&
-            "fullname" in episode.relationships.doctor.data.attributes
+            "relationships" in item &&
+            "doctor" in item.relationships &&
+            "data" in item.relationships.doctor &&
+            "attributes" in item.relationships.doctor.data &&
+            "fullname" in item.relationships.doctor.data.attributes
         ) {
-            return episode.relationships.doctor.data.attributes.fullname;
+            return item.relationships.doctor.data.attributes.fullname;
         }
-        console.log(episode);
+        console.log(item);
         return "?";
     };
 
@@ -134,11 +152,11 @@ export default function CasesList({
                                     onClick={() => onEpisodeSelected(episode)}
                                     className={liClassName(episode.id)}
                                 >
-                                    <div className="rounded-t-md p-1.5">
-                                        {episode.attributes.created_at}
+                                    <div className="rounded-t-md px-1.5 pt-1.5">
+                                        {caseItem.attributes.created_at}
                                     </div>
-                                    <div className="rounded-b-md font-bold p-1.5">
-                                        Dr. {parseDoctorFullName(episode)}
+                                    <div className="rounded-b-md font-bold px-1.5 pb-1.5">
+                                        Dr. {parseDoctorFullName(caseItem)}
                                     </div>
                                 </li>
                             )
