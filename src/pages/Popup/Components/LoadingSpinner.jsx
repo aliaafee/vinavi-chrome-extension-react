@@ -12,7 +12,7 @@ export default function LoadingSpinner({ size = "large", message }) {
     }
     return (
         <div className="w-full h-full flex flex-col items-center justify-center">
-            <div className="text-center p-2 w-80">{message}</div>
+            <div className="text-center p-2 max-w-80">{message}</div>
             <div className="animate-spin w-8 h-8 rounded-full border-4 border-grey-200 border-t-black border-solid"></div>
         </div>
     );
