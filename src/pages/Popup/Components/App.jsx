@@ -27,6 +27,7 @@ export default function App() {
     const [serviceProvider, setServiceProvider] = useState(null);
     const [error, setError] = useState(null);
     const [isLoading, setLoading] = useState(false);
+    const [waitLoad, setWaitLoad] = useState(false);
 
     useEffect(() => {
         (async () => {
@@ -70,6 +71,19 @@ export default function App() {
     //         }
     //     })();
     // };
+
+    if (waitLoad) {
+        return (
+            <div className="w-full h-full flex flex-col items-center justify-center">
+                <button
+                    className="w-12 p-1.5 rounded-md bg-red-300 border-0 focus:outline-2 focus:outline-red-300 hover:bg-red-400"
+                    onClick={() => setWaitLoad(false)}
+                >
+                    Start
+                </button>
+            </div>
+        );
+    }
 
     if (isLoading) {
         return <LoadingSpinner />;
