@@ -13,12 +13,20 @@ import EpisodeBrowser from "./EpisodeBrowser";
 import LoadingSpinner from "./LoadingSpinner";
 import ErrorMessage from "./ErrorMessage";
 import AuthContext from "./AuthContext";
+import { ActiveTabContext } from "./ActiveTabContext";
 
-function ToolBar({ patient, auth, onBackButtonClick = null }) {
+function ToolBar({
+    patient,
+    onBackButtonClick = null,
+    onSyncButtonClick = null,
+}) {
+    const auth = useContext(AuthContext);
+    const activeTab = useContext(ActiveTabContext);
+
     const onNewWindow = () => {
-        const url = patient
-            ? `popup.html#/patients/${patient.data.id}`
-            : `popup.html`;
+        const url = `popup.html${activeTab.id ? `?tabid=${activeTab.id}` : ""}${
+            patient ? `#/patients/${patient.data.id}` : ""
+        }`;
         chrome.windows.create(
             {
                 url: chrome.runtime.getURL(url),
@@ -46,14 +54,15 @@ function ToolBar({ patient, auth, onBackButtonClick = null }) {
                         <ArrowLeft size={16} color="black" />
                     </button>
                 )}
-                {/* <button
-                    onClick={() => {}}
-                    title="Load Active Patient"
-                    className="p-1.5 rounded-full hover:bg-gray-300"
-                    
-                >
-                    <RefreshCcw size={16} color="black" />
-                </button> */}
+                {activeTab.id && onSyncButtonClick && (
+                    <button
+                        onClick={onSyncButtonClick}
+                        title="Load Active Patient"
+                        className="p-1.5 rounded-full hover:bg-gray-300"
+                    >
+                        <RefreshCcw size={16} color="black" />
+                    </button>
+                )}
                 <button
                     onClick={onNewWindow}
                     title="Open New Window"
@@ -67,7 +76,7 @@ function ToolBar({ patient, auth, onBackButtonClick = null }) {
 }
 
 export default function PatientSearch() {
-    const auth = useContext(AuthContext);
+    const activeTab = useContext(ActiveTabContext);
     const [patient, setPatient] = useState(null);
     const [error, setError] = useState(null);
     const [isLoading, setLoading] = useState(false);
@@ -81,7 +90,7 @@ export default function PatientSearch() {
             try {
                 setLoading(true);
 
-                const currentPatientId = await VinaviApi.getCurrentPatientId();
+                const currentPatientId = await getCurrentPatientId();
 
                 if (currentPatientId !== null) {
                     const currentPatient = await VinaviApi.getPatient(
@@ -96,6 +105,56 @@ export default function PatientSearch() {
             }
         })();
     }, []);
+
+    const getCurrentPatientId = async () => {
+        //Fist try to get patientId from PopupUrl
+        const patientIdMatch = window.location.href.match(/\/patients\/(\d+)/);
+
+        if (patientIdMatch) {
+            return patientIdMatch[1];
+        }
+
+        if (!activeTab.id) {
+            return null;
+        }
+
+        // Next try to get patientId from active tab
+        return getPatientIdFromTab(activeTab.id);
+    };
+
+    const getPatientIdFromTab = async (tabid) => {
+        // Try to look for patient national id in tab of the emr
+        try {
+            const patientNationalId = await chrome.tabs.sendMessage(
+                activeTab.id,
+                {
+                    action: "getCurrentPatientNationalId",
+                }
+            );
+
+            if (patientNationalId) {
+                const currentPatient =
+                    await searchPatientByNationalIdentification(
+                        patientNationalId
+                    );
+                return currentPatient.data.id;
+            }
+        } catch (error) {}
+
+        //Next try to get the patientid from the url of vinavi
+        try {
+            const tab = await chrome.tabs.get(tabid);
+
+            const patientIdMatch2 = tab.url.match(/\/patients\/(\d+)/);
+
+            if (patientIdMatch2) {
+                return patientIdMatch2[1];
+            }
+        } catch (error) {
+            return null;
+        }
+        return null;
+    };
 
     const onSearch = async (event) => {
         setSearchError(null);
@@ -115,7 +174,29 @@ export default function PatientSearch() {
         } catch (error) {
             setSearchError(error);
         } finally {
+            setSearchText("");
             setIsSearching(false);
+        }
+    };
+
+    const onSync = async (event) => {
+        setError(null);
+        try {
+            setLoading(true);
+            const currentPatientId = await getPatientIdFromTab(activeTab.id);
+
+            if (currentPatientId !== null) {
+                const currentPatient = await VinaviApi.getPatient(
+                    currentPatientId
+                );
+                setPatient(currentPatient);
+            } else {
+                setPatient(null);
+            }
+        } catch (error) {
+            setError(error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -133,11 +214,11 @@ export default function PatientSearch() {
                 <EpisodeBrowser patient={patient} />
                 <ToolBar
                     patient={patient}
-                    auth={auth}
                     onBackButtonClick={() => {
                         setPatient(null);
                         setSearchText("");
                     }}
+                    onSyncButtonClick={onSync}
                 />
             </div>
         );
@@ -182,7 +263,7 @@ export default function PatientSearch() {
                     <br />
                 )}
             </div>
-            <ToolBar auth={auth} />
+            <ToolBar onSyncButtonClick={onSync} />
         </div>
     );
 }

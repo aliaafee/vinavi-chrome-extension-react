@@ -279,41 +279,6 @@ async function getServiceProvider() {
     }
 }
 
-async function getCurrentPatientId() {
-    const activeTab = await getActiveTab();
-
-    // Check to see if the patient id is provided in the popup url
-    const currentUrl = window.location.href;
-
-    const patientIdmatch = currentUrl.match(/\/patients\/(\d+)/);
-
-    if (patientIdmatch) {
-        return patientIdmatch[1];
-    }
-
-    try {
-        // Try to look for patient national id in page
-        const patientNationalId = await chrome.tabs.sendMessage(activeTab.id, {
-            action: "getCurrentPatientNationalId",
-        });
-
-        if (patientNationalId) {
-            const currentPatient = await searchPatientByNationalIdentification(
-                patientNationalId
-            );
-            return currentPatient.data.id;
-        }
-    } catch (error) {}
-
-    try {
-        return await chrome.tabs.sendMessage(activeTab.id, {
-            action: "getCurrentPatientId",
-        });
-    } catch (error) {
-        return null;
-    }
-}
-
 async function getAllCases(patientId, page = 1) {
     try {
         const cases = await getCases(patientId, page);
@@ -355,14 +320,29 @@ async function setServiceProvider(serviceProviderId) {
 }
 
 export default {
+    apiServer: apiServer,
+    getActiveTab: getActiveTab,
     getAllCases: getAllCases,
     getCases: getCases,
     getEpisodeDetail: getEpisodeDetail,
     getPatient: getPatient,
-    getCurrentPatientId: getCurrentPatientId,
     searchPatientByNationalIdentification:
         searchPatientByNationalIdentification,
     getAuthenticatedUser: getAuthenticatedUser,
     getServiceProvider: getServiceProvider,
     setServiceProvider: setServiceProvider,
 };
+
+// export {
+//     apiServer,
+//     getActiveTab,
+//     getAllCases,
+//     getCases,
+//     getEpisodeDetail,
+//     getPatient,
+//     getCurrentPatientId,
+//     searchPatientByNationalIdentification,
+//     getAuthenticatedUser,
+//     getServiceProvider,
+//     setServiceProvider,
+// };
