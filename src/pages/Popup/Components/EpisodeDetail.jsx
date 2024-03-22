@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 // import { JSONTree } from "react-json-tree";
+import { SquareArrowOutUpRight } from "lucide-react";
 
 import "../../../styles.css";
 
@@ -106,14 +107,16 @@ export default function EpisodeDetailComponent({
     return (
         <div className={`${className} flex justify-center`} style={style}>
             <div className="p-2 w-full max-w-lg">
-                <h2 className="text-lg mb-2">
+                <h2 className="text-lg mb-2 flex gap-4">
                     <span>Episode</span>
                     <a
+                        className="p-1.5 rounded-full hover:bg-gray-300"
                         title="Open episode"
                         target="_blank"
                         href={`https://vinavi.aasandha.mv/#/patients/${episode.data.relationships.patient.data.id}/episodes/${episode.data.id}`}
-                        className="ml-2 external-link bg-blue-600 hover:bg-blue-800"
-                    ></a>
+                    >
+                        <SquareArrowOutUpRight size={16} color="black" />
+                    </a>
                 </h2>
                 <EpisodeInformation episode={episode} />
                 <DiagnosisList

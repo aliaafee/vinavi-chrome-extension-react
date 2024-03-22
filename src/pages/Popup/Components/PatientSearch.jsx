@@ -1,4 +1,10 @@
 import React, { useEffect, useState, useContext } from "react";
+import {
+    SquareArrowOutUpRight,
+    User,
+    ArrowLeft,
+    RefreshCcw,
+} from "lucide-react";
 
 import "../../../styles.css";
 
@@ -8,7 +14,7 @@ import LoadingSpinner from "./LoadingSpinner";
 import ErrorMessage from "./ErrorMessage";
 import AuthContext from "./AuthContext";
 
-function ToolBar({ patient, auth }) {
+function ToolBar({ patient, auth, onBackButtonClick = null }) {
     const onNewWindow = () => {
         const url = patient
             ? `popup.html#/patients/${patient.data.id}`
@@ -24,22 +30,38 @@ function ToolBar({ patient, auth }) {
         );
     };
 
-    console.log(auth);
-
     return (
-        <div className="items-center top-0 left-0 fixed flex justify-end w-full gap-4 pr-1.5">
+        <div className="items-center top-0 left-0 fixed flex justify-end w-full gap-4">
             <div className="flex items-center gap-1.5 px-1.5 py-1.5 rounded-b-md bg-gray-300">
-                <div className="user bg-black"></div>
+                <User size={16} color="black" />
                 {auth.user.data.attributes.full_name}
             </div>
-            <button
-                onClick={onNewWindow}
-                title="Open New Window"
-                className="new-window bg-black"
-                style={{
-                    left: "calc(100% - 48px)",
-                }}
-            ></button>
+            <div className="flex gap-1.5 pr-1">
+                {onBackButtonClick && (
+                    <button
+                        onClick={onBackButtonClick}
+                        title="Back To Patient Search"
+                        className="p-1.5 rounded-full hover:bg-gray-300"
+                    >
+                        <ArrowLeft size={16} color="black" />
+                    </button>
+                )}
+                {/* <button
+                    onClick={() => {}}
+                    title="Load Active Patient"
+                    className="p-1.5 rounded-full hover:bg-gray-300"
+                    
+                >
+                    <RefreshCcw size={16} color="black" />
+                </button> */}
+                <button
+                    onClick={onNewWindow}
+                    title="Open New Window"
+                    className="p-1.5 rounded-full hover:bg-gray-300"
+                >
+                    <SquareArrowOutUpRight size={16} color="black" />
+                </button>
+            </div>
         </div>
     );
 }
@@ -109,7 +131,14 @@ export default function PatientSearch() {
         return (
             <div className="w-full h-full flex flex-col">
                 <EpisodeBrowser patient={patient} />
-                <ToolBar patient={patient} auth={auth} />
+                <ToolBar
+                    patient={patient}
+                    auth={auth}
+                    onBackButtonClick={() => {
+                        setPatient(null);
+                        setSearchText("");
+                    }}
+                />
             </div>
         );
     }
