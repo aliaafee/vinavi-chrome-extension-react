@@ -17,9 +17,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 async function getCurrentPatientId() {
-    const currentUrl = window.location.href;
+    if (!window.location.href.includes("vinavi")) {
+        return null
+    }
 
-    const patientIdmatch = currentUrl.match(/\/patients\/(\d+)/);
+    const patientIdmatch = window.location.href.match(/\/patients\/(\d+)/);
 
     if (patientIdmatch) {
         return patientIdmatch[1];
@@ -29,6 +31,10 @@ async function getCurrentPatientId() {
 }
 
 async function getCurrentPatientNationalId() {
+    if (!window.location.href.includes("hinai")) {
+        return null
+    }
+
     const infoElement = document.getElementById("patientFlag");
     
     if (!infoElement) {

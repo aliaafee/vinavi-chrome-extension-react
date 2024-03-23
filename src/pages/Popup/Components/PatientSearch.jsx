@@ -83,6 +83,7 @@ export default function PatientSearch() {
     const [searchText, setSearchText] = useState("");
     const [isSearching, setIsSearching] = useState(false);
     const [searchError, setSearchError] = useState(null);
+    const [statusMessage, setStatusMessage] = useState("");
 
     useEffect(() => {
         (async () => {
@@ -108,6 +109,7 @@ export default function PatientSearch() {
 
     const getCurrentPatientId = async () => {
         //Fist try to get patientId from PopupUrl
+        setStatusMessage("Checking Popup URL")
         const patientIdMatch = window.location.href.match(/\/patients\/(\d+)/);
 
         if (patientIdMatch) {
@@ -124,9 +126,10 @@ export default function PatientSearch() {
 
     const getPatientIdFromTab = async (tabid) => {
         // Try to look for patient national id in tab of the emr
+        setStatusMessage("Checking Page Content")
         try {
             const patientNationalId = await chrome.tabs.sendMessage(
-                activeTab.id,
+                tabid,
                 {
                     action: "getCurrentPatientNationalId",
                 }
@@ -134,14 +137,17 @@ export default function PatientSearch() {
 
             if (patientNationalId) {
                 const currentPatient =
-                    await searchPatientByNationalIdentification(
+                    await  VinaviApi.searchPatientByNationalIdentification(
                         patientNationalId
                     );
                 return currentPatient.data.id;
             }
-        } catch (error) {}
+        } catch (error) {
+            alert(error.message)
+        }
 
         //Next try to get the patientid from the url of vinavi
+        setStatusMessage("Checking Page URL")
         try {
             const tab = await chrome.tabs.get(tabid);
 
@@ -201,7 +207,7 @@ export default function PatientSearch() {
     };
 
     if (isLoading) {
-        return <LoadingSpinner />;
+        return <LoadingSpinner message={statusMessage} />;
     }
 
     if (error) {
