@@ -10,6 +10,7 @@ import DiagnosisList from "./DiagnosisList";
 import PrescriptionList from "./PrescriptionList";
 import LoadingSpinner from "./LoadingSpinner";
 import ErrorMessage from "./ErrorMessage";
+import ServicesList from "./ServicesList";
 
 function EpisodeInformation({ episode }) {
     if (!episode) {
@@ -123,6 +124,11 @@ export default function EpisodeDetailComponent({
                     diagnoses={episode.data.relationships.diagnoses.data}
                 />
                 <NoteList notes={episode.data.relationships.notes.data} />
+                <ServicesList
+                    services={
+                        episode.data.relationships["requested-services"].data
+                    }
+                />
                 <PrescriptionList
                     prescriptions={
                         episode.data.relationships.prescriptions.data
