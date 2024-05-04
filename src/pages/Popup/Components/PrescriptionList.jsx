@@ -1,3 +1,4 @@
+import { PrinterIcon } from "lucide-react";
 import React from "react";
 
 export default function PrescriptionList({ prescriptions }) {
@@ -13,9 +14,22 @@ export default function PrescriptionList({ prescriptions }) {
                         key={index}
                         className="rounded-md divide-solid divide-y divide-x-0 bg-gray-100 divide-grey-300"
                     >
-                        <div className="p-1.5">
-                            <span className="capitalize">created at </span>
-                            <span>{prescription.attributes.created_at}</span>
+                        <div className="p-1.5 flex justify-between items-center">
+                            <div>
+                                <span className="capitalize">created at </span>
+                                <span>
+                                    {prescription.attributes.created_at}
+                                </span>
+                            </div>
+
+                            <a
+                                className="p-1.5 rounded-full hover:bg-gray-300 inline-block"
+                                title="Print"
+                                target="_blank"
+                                href={`https://vinavi.aasandha.mv/api/prescriptions/${prescription.id}/pdf`}
+                            >
+                                <PrinterIcon size={16} />
+                            </a>
                         </div>
                         <ol className="flex flex-col gap-1.5 p-1.5 pl-5 list-decimal">
                             {prescription.relationships.medicines.data.map(
