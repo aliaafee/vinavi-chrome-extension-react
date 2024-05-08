@@ -1,9 +1,10 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useMemo } from "react";
 import {
     SquareArrowOutUpRight,
     User,
     ArrowLeft,
     RefreshCcw,
+    CopyPlusIcon,
 } from "lucide-react";
 
 import "../../../styles.css";
@@ -15,6 +16,11 @@ import ErrorMessage from "./ErrorMessage";
 import AuthContext from "./AuthContext";
 import { ActiveTabContext } from "./ActiveTabContext";
 
+function getUrlParams() {
+    const queryString = window.location.search;
+    return new URLSearchParams(queryString);
+}
+
 function ToolBar({
     patient,
     onBackButtonClick = null,
@@ -22,6 +28,7 @@ function ToolBar({
 }) {
     const auth = useContext(AuthContext);
     const activeTab = useContext(ActiveTabContext);
+    const isPopUpWindw = useMemo(() => !getUrlParams().has("tabid"));
 
     const onNewWindow = () => {
         const url = `popup.html${activeTab.id ? `?tabid=${activeTab.id}` : ""}${
@@ -36,6 +43,9 @@ function ToolBar({
                 window.location = "Yo";
             }
         );
+        if (isPopUpWindw) {
+            window.close();
+        }
     };
 
     return (
@@ -68,7 +78,11 @@ function ToolBar({
                     title="Open New Window"
                     className="p-1.5 rounded-full hover:bg-gray-300"
                 >
-                    <SquareArrowOutUpRight size={16} color="black" />
+                    {isPopUpWindw ? (
+                        <SquareArrowOutUpRight size={16} color="black" />
+                    ) : (
+                        <CopyPlusIcon size={16} color="black" />
+                    )}
                 </button>
             </div>
         </div>
@@ -109,7 +123,7 @@ export default function PatientSearch() {
 
     const getCurrentPatientId = async () => {
         //Fist try to get patientId from PopupUrl
-        setStatusMessage("Checking Popup URL")
+        setStatusMessage("Checking Popup URL");
         const patientIdMatch = window.location.href.match(/\/patients\/(\d+)/);
 
         if (patientIdMatch) {
@@ -126,28 +140,25 @@ export default function PatientSearch() {
 
     const getPatientIdFromTab = async (tabid) => {
         // Try to look for patient national id in tab of the emr
-        setStatusMessage("Checking Page Content")
+        setStatusMessage("Checking Page Content");
         try {
-            const patientNationalId = await chrome.tabs.sendMessage(
-                tabid,
-                {
-                    action: "getCurrentPatientNationalId",
-                }
-            );
+            const patientNationalId = await chrome.tabs.sendMessage(tabid, {
+                action: "getCurrentPatientNationalId",
+            });
 
             if (patientNationalId) {
                 const currentPatient =
-                    await  VinaviApi.searchPatientByNationalIdentification(
+                    await VinaviApi.searchPatientByNationalIdentification(
                         patientNationalId
                     );
                 return currentPatient.data.id;
             }
         } catch (error) {
-            alert(error.message)
+            alert(error.message);
         }
 
         //Next try to get the patientid from the url of vinavi
-        setStatusMessage("Checking Page URL")
+        setStatusMessage("Checking Page URL");
         try {
             const tab = await chrome.tabs.get(tabid);
 
