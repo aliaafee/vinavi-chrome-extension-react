@@ -76,7 +76,6 @@ async function postResource(url, data) {
 async function getAllPaginatedResources(url, page = 1) {
     try {
         const items = await getResource(url + `&page%5Bnumber%5D=${page}`);
-        console.log(items);
 
         if (items.meta.last_page > items.meta.current_page) {
             const moreItems = await getAllPaginatedResources(url, page + 1);
@@ -377,4 +376,6 @@ export {
     getAuthenticatedUser,
     getServiceProvider,
     setServiceProvider,
+    getAllPaginatedResources,
+    getResource,
 };
