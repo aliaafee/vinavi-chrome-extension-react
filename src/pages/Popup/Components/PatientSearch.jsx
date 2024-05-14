@@ -9,7 +9,10 @@ import {
 
 import "../../../styles.css";
 
-import VinaviApi from "../../../api/VinaviApi";
+import {
+    getPatient,
+    searchPatientByNationalIdentification,
+} from "../../../api/VinaviApi";
 import EpisodeBrowser from "./EpisodeBrowser";
 import LoadingSpinner from "./LoadingSpinner";
 import ErrorMessage from "./ErrorMessage";
@@ -108,9 +111,7 @@ export default function PatientSearch() {
                 const currentPatientId = await getCurrentPatientId();
 
                 if (currentPatientId !== null) {
-                    const currentPatient = await VinaviApi.getPatient(
-                        currentPatientId
-                    );
+                    const currentPatient = await getPatient(currentPatientId);
                     setPatient(currentPatient);
                 }
             } catch (error) {
@@ -148,7 +149,7 @@ export default function PatientSearch() {
 
             if (patientNationalId) {
                 const currentPatient =
-                    await VinaviApi.searchPatientByNationalIdentification(
+                    await searchPatientByNationalIdentification(
                         patientNationalId
                     );
                 return currentPatient.data.id;
@@ -179,11 +180,9 @@ export default function PatientSearch() {
             setIsSearching(true);
 
             const patientSearchResult =
-                await VinaviApi.searchPatientByNationalIdentification(
-                    searchText
-                );
+                await searchPatientByNationalIdentification(searchText);
 
-            const currentPatient = await VinaviApi.getPatient(
+            const currentPatient = await getPatient(
                 patientSearchResult.data.id
             );
 
@@ -203,9 +202,7 @@ export default function PatientSearch() {
             const currentPatientId = await getPatientIdFromTab(activeTab.id);
 
             if (currentPatientId !== null) {
-                const currentPatient = await VinaviApi.getPatient(
-                    currentPatientId
-                );
+                const currentPatient = await getPatient(currentPatientId);
                 setPatient(currentPatient);
             } else {
                 setPatient(null);

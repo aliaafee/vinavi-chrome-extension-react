@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import "../../../styles.css";
 
-import VinaviApi from "../../../api/VinaviApi";
+import { getAllCases } from "../../../api/VinaviApi";
 import LoadingSpinner from "./LoadingSpinner";
 import ErrorMessage from "./ErrorMessage";
 
@@ -29,7 +29,7 @@ export default function CasesList({
             try {
                 setLoading(true);
 
-                const loadedCases = await VinaviApi.getAllCases(patientId);
+                const loadedCases = await getAllCases(patientId);
 
                 setCases(loadedCases.data);
                 setFilteredCases(loadedCases.data);

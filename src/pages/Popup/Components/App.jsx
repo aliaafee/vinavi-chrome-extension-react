@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 
-import VinaviApi from "../../../api/VinaviApi";
+import {
+    getAuthenticatedUser,
+    getServiceProvider,
+} from "../../../api/VinaviApi";
 import PatientSearch from "./PatientSearch";
 import AuthContext from "./AuthContext";
 import { ActiveTabContextProvider } from "./ActiveTabContext";
@@ -35,14 +38,11 @@ export default function App() {
             try {
                 setLoading(true);
 
-                const loggedUser = processUser(
-                    await VinaviApi.getAuthenticatedUser()
-                );
+                const loggedUser = processUser(await getAuthenticatedUser());
                 setUser(loggedUser);
 
                 try {
-                    const selectedServiceProvider =
-                        await VinaviApi.getServiceProvider();
+                    const selectedServiceProvider = await getServiceProvider();
                     setServiceProvider(selectedServiceProvider);
                 } catch (error) {}
             } catch (error) {

@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useState } from "react";
 
-import VinaviApi from "../../../api/VinaviApi";
+import { getActiveTab } from "../../../api/VinaviApi";
 import LoadingSpinner from "./LoadingSpinner";
 
 const ActiveTabContext = createContext({ tabid: null });
@@ -18,7 +18,7 @@ const getActiveTabId = async () => {
             return tab.id;
         }
 
-        const activeTab = await VinaviApi.getActiveTab();
+        const activeTab = await getActiveTab();
 
         // if (!activeTab.url.includes(VinaviApi.apiServer)) {
         //     return null;

@@ -4,7 +4,7 @@ import { SquareArrowOutUpRight } from "lucide-react";
 
 import "../../../styles.css";
 
-import VinaviApi from "../../../api/VinaviApi";
+import { getEpisodeDetail } from "../../../api/VinaviApi";
 import NoteList from "./NoteList";
 import DiagnosisList from "./DiagnosisList";
 import PrescriptionList from "./PrescriptionList";
@@ -69,9 +69,7 @@ export default function EpisodeDetailComponent({
             try {
                 setLoading(true);
 
-                const loadedEpisode = await VinaviApi.getEpisodeDetail(
-                    episodeId
-                );
+                const loadedEpisode = await getEpisodeDetail(episodeId);
                 setEpisode(loadedEpisode);
             } catch (error) {
                 setError(error);

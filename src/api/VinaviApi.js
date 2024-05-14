@@ -366,30 +366,15 @@ async function setServiceProvider(serviceProviderId) {
     });
 }
 
-export default {
-    apiServer: apiServer,
-    getActiveTab: getActiveTab,
-    getAllCases: getAllCases,
-    getCases: getCases,
-    getEpisodeDetail: getEpisodeDetail,
-    getPatient: getPatient,
-    searchPatientByNationalIdentification:
-        searchPatientByNationalIdentification,
-    getAuthenticatedUser: getAuthenticatedUser,
-    getServiceProvider: getServiceProvider,
-    setServiceProvider: setServiceProvider,
+export {
+    apiServer,
+    getActiveTab,
+    getAllCases,
+    getCases,
+    getEpisodeDetail,
+    getPatient,
+    searchPatientByNationalIdentification,
+    getAuthenticatedUser,
+    getServiceProvider,
+    setServiceProvider,
 };
-
-// export {
-//     apiServer,
-//     getActiveTab,
-//     getAllCases,
-//     getCases,
-//     getEpisodeDetail,
-//     getPatient,
-//     getCurrentPatientId,
-//     searchPatientByNationalIdentification,
-//     getAuthenticatedUser,
-//     getServiceProvider,
-//     setServiceProvider,
-// };
