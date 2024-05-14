@@ -73,6 +73,39 @@ async function postResource(url, data) {
     }
 }
 
+async function getAllPaginatedResources(url, page = 1) {
+    try {
+        const items = await getResource(url + `&page%5Bnumber%5D=${page}`);
+        console.log(items);
+
+        if (items.meta.last_page > items.meta.current_page) {
+            const moreItems = await getAllPaginatedResources(url, page + 1);
+
+            return {
+                data: items.data.concat(moreItems.data),
+                included: items.included.concat(moreItems.included),
+                meta: {
+                    current_page: 1,
+                    last_page: 1,
+                },
+            };
+        }
+
+        return {
+            data: items.data,
+            included: items.included,
+            meta: {
+                current_page: 1,
+                last_page: 1,
+            },
+        };
+    } catch (error) {
+        throw new Error("Failed to get all resources", {
+            cause: error.cause,
+        });
+    }
+}
+
 function processRelationshipItem(relationshipItem, includedMap, depth) {
     if (!(relationshipItem.type in includedMap)) {
         return relationshipItem;
@@ -279,35 +312,49 @@ async function getServiceProvider() {
     }
 }
 
-async function getAllCases(patientId, page = 1) {
+async function getAllCases(patientId) {
     try {
-        const cases = await getCases(patientId, page);
-
-        if (cases.meta.last_page > cases.meta.current_page) {
-            const moreCases = await getAllCases(patientId, page + 1);
-
-            return {
-                data: cases.data.concat(moreCases.data),
-                meta: {
-                    current_page: 1,
-                    last_page: 1,
-                },
-            };
-        }
-
-        return {
-            data: cases.data,
-            meta: {
-                current_page: 1,
-                last_page: 1,
-            },
-        };
+        return processResource(
+            await getAllPaginatedResources(
+                `${getApiUrl()}/patients/${patientId}/patient-cases?include=episodes,doctor&sort=-created_at`
+            )
+        );
     } catch (error) {
-        throw new Error("Failed to get all cases", {
+        throw new Error(`Could not get cases, ${error.message}`, {
             cause: error.cause,
         });
     }
 }
+
+// async function getAllCases(patientId, page = 1) {
+//     try {
+//         const cases = await getCases(patientId, page);
+
+//         if (cases.meta.last_page > cases.meta.current_page) {
+//             const moreCases = await getAllCases(patientId, page + 1);
+
+//             return {
+//                 data: cases.data.concat(moreCases.data),
+//                 meta: {
+//                     current_page: 1,
+//                     last_page: 1,
+//                 },
+//             };
+//         }
+
+//         return {
+//             data: cases.data,
+//             meta: {
+//                 current_page: 1,
+//                 last_page: 1,
+//             },
+//         };
+//     } catch (error) {
+//         throw new Error("Failed to get all cases", {
+//             cause: error.cause,
+//         });
+//     }
+// }
 
 async function setServiceProvider(serviceProviderId) {
     if (!serviceProviderId) {
