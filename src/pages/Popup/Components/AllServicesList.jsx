@@ -12,45 +12,82 @@ function getServices(page) {
     );
 }
 
+function ServicesList({ services }) {
+    return (
+        <table className="w-full table-fixed">
+            <thead>
+                <tr>
+                    <td>id</td>
+                    <td>code</td>
+                    <td>name</td>
+                    <td>service_type</td>
+                    <td>active_from</td>
+                    <td>active_to</td>
+                </tr>
+            </thead>
+            <tbody>
+                {services.map((service, index) => (
+                    <tr key={service.id} className="odd:bg-gray-300">
+                        <td>{service.id}</td>
+                        <td>{service.code}</td>
+                        <td>{service.name}</td>
+                        <td>{service.service_type}</td>
+                        <td>{service.active_from}</td>
+                        <td>{service.active_to}</td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+    );
+}
+
 export default function AllServicesList({ className = "", style = {} }) {
     const [allServices, setAllServices] = useState(null);
+    const [servicesCount, setServicesCount] = useState(0);
     const [error, setError] = useState(null);
     const [isLoading, setLoading] = useState(false);
 
+    const loadAllServices = async () => {
+        setError(null);
+        try {
+            setLoading(true);
+
+            let page = 0;
+            let list = [];
+            let services;
+
+            do {
+                page = page + 1;
+                services = await getServices(page);
+                list.push(
+                    ...services.data.map((item) => ({
+                        id: item.id,
+                        code: item.attributes.code,
+                        name: item.attributes.name,
+                        service_type: item.attributes.service_type,
+                        active_from: item.attributes.active_from,
+                        active_to: item.attributes.active_to,
+                    }))
+                );
+                setAllServices(list);
+                setServicesCount(list.length);
+            } while (services.meta.last_page > services.meta.current_page);
+
+            console.log(list);
+        } catch (error) {
+            setError(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        (async () => {
-            setError(null);
-            try {
-                setLoading(true);
-
-                let page = 0;
-                let list = [];
-                let services;
-
-                do {
-                    page = page + 1;
-                    services = await getServices(page);
-                    list.push(
-                        ...services.data.map((item) => ({
-                            id: item.id,
-                            code: item.attributes.code,
-                            name: item.attributes.name,
-                            service_type: item.attributes.service_type,
-                            active_from: item.attributes.active_from,
-                            active_to: item.attributes.active_to,
-                        }))
-                    );
-                    setAllServices(list);
-                } while (services.meta.last_page > services.meta.current_page);
-
-                console.log(list);
-            } catch (error) {
-                setError(error);
-            } finally {
-                setLoading(false);
-            }
-        })();
+        loadAllServices();
     }, []);
+
+    const handleStartLoading = () => {
+        loadAllServices();
+    };
 
     const handleDownload = () => {
         const workbook = XLSX.utils.book_new();
@@ -106,34 +143,20 @@ export default function AllServicesList({ className = "", style = {} }) {
     }
 
     return (
-        <div className="overflow-auto">
+        <div className="overflow-y-auto">
             <button onClick={handleDownload} disabled={isLoading}>
                 {isLoading ? "Loading..." : "Download Spreadsheet"}
             </button>
-            <table>
-                <thead>
-                    <tr>
-                        <td>id</td>
-                        <td>code</td>
-                        <td>name</td>
-                        <td>service_type</td>
-                        <td>active_from</td>
-                        <td>active_to</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    {allServices.map((service, index) => (
-                        <tr key={service.id}>
-                            <td>{service.id}</td>
-                            <td>{service.code}</td>
-                            <td>{service.name}</td>
-                            <td>{service.service_type}</td>
-                            <td>{service.active_from}</td>
-                            <td>{service.active_to}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            <div>Number of services: {servicesCount}</div>
+            <div>
+                {!!error && (
+                    <div>
+                        Error: {error.message}{" "}
+                        <button onClick={handleStartLoading}>Try Again</button>
+                    </div>
+                )}
+            </div>
+            <ServicesList services={allServices} />
         </div>
     );
 }
