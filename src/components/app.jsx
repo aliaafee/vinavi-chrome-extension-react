@@ -6,6 +6,7 @@ import AuthContext from "./auth-context";
 import ErrorMessage from "./error-message";
 import LoadingSpinner from "./loading-spinner";
 import { ActiveTabContextProvider } from "./active-tab-context";
+import { User } from "lucide-react";
 // import SelectedServiceProviderForm from "./SelectServiceProviderForm";
 
 const processUser = (user) => {
@@ -23,7 +24,7 @@ const processUser = (user) => {
     };
 };
 
-export default function App() {
+export default function App({ children }) {
     const [user, setUser] = useState(null);
     const [serviceProvider, setServiceProvider] = useState(null);
     const [error, setError] = useState(null);
@@ -113,7 +114,13 @@ export default function App() {
             <AuthContext.Provider
                 value={{ user: user, serviceProvider: serviceProvider }}
             >
-                <PatientSearch />
+                <div className="items-center top-0 left-0 fixed flex justify-end w-full gap-4">
+                    <div className="mr-28 flex items-center gap-1.5 px-1.5 py-1.5 rounded-b-md bg-gray-300">
+                        <User size={16} color="black" />
+                        {user.data.attributes.full_name}
+                    </div>
+                </div>
+                {children}
             </AuthContext.Provider>
         </ActiveTabContextProvider>
     );

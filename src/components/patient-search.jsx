@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext, useMemo } from "react";
 import {
     SquareArrowOutUpRight,
-    User,
+    // User,
     ArrowLeft,
     RefreshCcw,
     CopyPlusIcon,
@@ -14,7 +14,7 @@ import {
 import EpisodeBrowser from "./episode-browser";
 import LoadingSpinner from "./loading-spinner";
 import ErrorMessage from "./error-message";
-import AuthContext from "./auth-context";
+// import AuthContext from "./auth-context";
 import { ActiveTabContext } from "./active-tab-context";
 
 function getUrlParams() {
@@ -27,7 +27,7 @@ function ToolBar({
     onBackButtonClick = null,
     onSyncButtonClick = null,
 }) {
-    const auth = useContext(AuthContext);
+    // const auth = useContext(AuthContext);
     const activeTab = useContext(ActiveTabContext);
     const isPopUpWindw = useMemo(() => !getUrlParams().has("tabid"));
 
@@ -51,10 +51,10 @@ function ToolBar({
 
     return (
         <div className="items-center top-0 left-0 fixed flex justify-end w-full gap-4">
-            <div className="flex items-center gap-1.5 px-1.5 py-1.5 rounded-b-md bg-gray-300">
+            {/* <div className="flex items-center gap-1.5 px-1.5 py-1.5 rounded-b-md bg-gray-300">
                 <User size={16} color="black" />
                 {auth.user.data.attributes.full_name}
-            </div>
+            </div> */}
             <div className="flex gap-1.5 pr-1">
                 {onBackButtonClick && (
                     <button
