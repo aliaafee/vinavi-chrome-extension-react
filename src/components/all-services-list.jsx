@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 
-import { getResource } from "../../../api/VinaviApi";
+import { getResource } from "../api/VinaviApi";
 import { JSONTree } from "react-json-tree";
 import * as XLSX from "xlsx";
-import LoadingSpinner from "./LoadingSpinner";
-import ErrorMessage from "./ErrorMessage";
+import LoadingSpinner from "./loading-spinner";
+import ErrorMessage from "./error-message";
 
 function getServices(page) {
     return getResource(

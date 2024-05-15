@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
 
-import {
-    getAuthenticatedUser,
-    getServiceProvider,
-} from "../../../api/VinaviApi";
-import PatientSearch from "./PatientSearch";
-import AuthContext from "./AuthContext";
-import { ActiveTabContextProvider } from "./ActiveTabContext";
-import ErrorMessage from "./ErrorMessage";
-import LoadingSpinner from "./LoadingSpinner";
+import { getAuthenticatedUser, getServiceProvider } from "../api/VinaviApi";
+import PatientSearch from "./patient-search";
+import AuthContext from "./auth-context";
+import ErrorMessage from "./error-message";
+import LoadingSpinner from "./loading-spinner";
+import { ActiveTabContextProvider } from "./active-tab-context";
 // import SelectedServiceProviderForm from "./SelectServiceProviderForm";
 
 const processUser = (user) => {

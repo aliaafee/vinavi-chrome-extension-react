@@ -1,7 +1,7 @@
 import React, { createContext, useEffect, useState } from "react";
 
-import { getActiveTab } from "../../../api/VinaviApi";
-import LoadingSpinner from "./LoadingSpinner";
+import { getActiveTab } from "../api/VinaviApi";
+import LoadingSpinner from "./loading-spinner";
 
 const ActiveTabContext = createContext({ tabid: null });
 

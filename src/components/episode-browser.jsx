@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 
-import "../../../styles.css";
-
-import CasesList from "./CasesList";
-import EpisodeDetail from "./EpisodeDetail";
-import VerticalSplitter from "./VerticalSplitter";
+import CasesList from "./cases-list";
+import EpisodeDetail from "./episode-detail";
+import VerticalSplitter from "./vertical-splitter";
 
 export default function EpisodeBrowser({ patient }) {
     const [selectedEpisodeId, setSelectedEpisodeId] = useState(null);

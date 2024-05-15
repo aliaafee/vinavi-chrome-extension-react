@@ -7,17 +7,15 @@ import {
     CopyPlusIcon,
 } from "lucide-react";
 
-import "../../../styles.css";
-
 import {
     getPatient,
     searchPatientByNationalIdentification,
-} from "../../../api/VinaviApi";
-import EpisodeBrowser from "./EpisodeBrowser";
-import LoadingSpinner from "./LoadingSpinner";
-import ErrorMessage from "./ErrorMessage";
-import AuthContext from "./AuthContext";
-import { ActiveTabContext } from "./ActiveTabContext";
+} from "../api/VinaviApi";
+import EpisodeBrowser from "./episode-browser";
+import LoadingSpinner from "./loading-spinner";
+import ErrorMessage from "./error-message";
+import AuthContext from "./auth-context";
+import { ActiveTabContext } from "./active-tab-context";
 
 function getUrlParams() {
     const queryString = window.location.search;

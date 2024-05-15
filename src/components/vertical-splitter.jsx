@@ -1,7 +1,5 @@
 import React, { useState, Children } from "react";
 
-import "../../../styles.css";
-
 export default function VerticalSplitter({ leftWidth = "200px", children }) {
     const childrenArray = Children.toArray(children);
     return (

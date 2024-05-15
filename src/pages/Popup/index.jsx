@@ -1,9 +1,7 @@
+import App from "@/components/app";
 import React from "react";
 import { createRoot } from "react-dom/client";
-
-import App from "./Components/App";
-import WaitLoad from "./Components/WaitLoad";
-import { Rotate3D } from "lucide-react";
+import "@/styles.css";
 
 const container = document.getElementById("app-container");
 const root = createRoot(container);

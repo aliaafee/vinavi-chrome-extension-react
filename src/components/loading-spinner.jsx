@@ -1,7 +1,5 @@
 import React from "react";
 
-import "../../../styles.css";
-
 export default function LoadingSpinner({ size = "large", message }) {
     if (size === "small") {
         return (

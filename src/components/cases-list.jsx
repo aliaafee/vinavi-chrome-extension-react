@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 
-import "../../../styles.css";
-
-import { getAllCases } from "../../../api/VinaviApi";
-import LoadingSpinner from "./LoadingSpinner";
-import ErrorMessage from "./ErrorMessage";
+import { getAllCases } from "../api/VinaviApi";
+import LoadingSpinner from "./loading-spinner";
+import ErrorMessage from "./error-message";
 
 export default function CasesList({
     patientId,

@@ -1,7 +1,5 @@
 import React from "react";
 
-import "../../../styles.css";
-
 export default function ErrorMessage({ title, message, children }) {
     return (
         <div className="w-full h-full flex items-center justify-center">

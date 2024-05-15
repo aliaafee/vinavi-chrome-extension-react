@@ -2,15 +2,13 @@ import React, { useEffect, useState } from "react";
 // import { JSONTree } from "react-json-tree";
 import { SquareArrowOutUpRight } from "lucide-react";
 
-import "../../../styles.css";
-
-import { getEpisodeDetail } from "../../../api/VinaviApi";
-import NoteList from "./NoteList";
-import DiagnosisList from "./DiagnosisList";
-import PrescriptionList from "./PrescriptionList";
-import LoadingSpinner from "./LoadingSpinner";
-import ErrorMessage from "./ErrorMessage";
-import ServicesList from "./ServicesList";
+import { getEpisodeDetail } from "../api/VinaviApi";
+import NoteList from "./note-list";
+import DiagnosisList from "./diagnosis-list";
+import PrescriptionList from "./prescription-list";
+import LoadingSpinner from "./loading-spinner";
+import ErrorMessage from "./error-message";
+import ServicesList from "./services-list";
 
 function EpisodeInformation({ episode }) {
     if (!episode) {
