@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { getAllCases } from "../api/VinaviApi";
+import { getAllCases, getProfessionalFullname } from "../api/VinaviApi";
 import LoadingSpinner from "./loading-spinner";
 import ErrorMessage from "./error-message";
 
@@ -111,20 +111,6 @@ export default function CasesList({
                 : "bg-gray-100 hover:bg-red-100",
         ].join(" ");
 
-    const parseDoctorFullName = (item) => {
-        if (
-            "relationships" in item &&
-            "doctor" in item.relationships &&
-            "data" in item.relationships.doctor &&
-            "attributes" in item.relationships.doctor.data &&
-            "fullname" in item.relationships.doctor.data.attributes
-        ) {
-            return item.relationships.doctor.data.attributes.fullname;
-        }
-        console.log(item);
-        return "?";
-    };
-
     return (
         <div className="flex flex-col bg-gray-200" style={style}>
             <div className="px-1.5 pt-1.5 pb-0 font-bold bg-gray-300">
@@ -154,7 +140,7 @@ export default function CasesList({
                                         {caseItem.attributes.created_at}
                                     </div>
                                     <div className="rounded-b-md font-bold px-1.5 pb-1.5">
-                                        Dr. {parseDoctorFullName(caseItem)}
+                                        {getProfessionalFullname(caseItem)}
                                     </div>
                                 </li>
                             )

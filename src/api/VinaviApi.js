@@ -365,6 +365,30 @@ async function setServiceProvider(serviceProviderId) {
     });
 }
 
+const titleFromProfessionalType = (professionalType) => {
+    if (professionalType === "doctor") {
+        return "Dr. ";
+    }
+    return professionalType[0].toUpperCase() + professionalType.slice(1);
+};
+
+const getProfessionalFullname = (caseItem) => {
+    console.log(caseItem);
+    if (
+        "relationships" in caseItem &&
+        "doctor" in caseItem.relationships &&
+        "data" in caseItem.relationships.doctor &&
+        "attributes" in caseItem.relationships.doctor.data &&
+        "fullname" in caseItem.relationships.doctor.data.attributes
+    ) {
+        return `${titleFromProfessionalType(
+            caseItem.relationships.doctor.data.attributes.professional_type
+        )} ${caseItem.relationships.doctor.data.attributes.fullname}`;
+    }
+    console.log(caseItem);
+    return "?";
+};
+
 export {
     apiServer,
     getActiveTab,
@@ -378,4 +402,5 @@ export {
     setServiceProvider,
     getAllPaginatedResources,
     getResource,
+    getProfessionalFullname,
 };

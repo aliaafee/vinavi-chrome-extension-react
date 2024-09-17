@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 // import { JSONTree } from "react-json-tree";
 import { SquareArrowOutUpRight } from "lucide-react";
 
-import { getEpisodeDetail } from "../api/VinaviApi";
+import { getEpisodeDetail, getProfessionalFullname } from "../api/VinaviApi";
 import NoteList from "./note-list";
 import DiagnosisList from "./diagnosis-list";
 import PrescriptionList from "./prescription-list";
@@ -29,10 +29,9 @@ function EpisodeInformation({ episode }) {
                 </span>
             </li>
             <li className="flex flex-col">
-                <span className="capitalize">doctor</span>
+                <span className="capitalize">Professional</span>
                 <span className="font-bold pl-1.5">
-                    Dr.{" "}
-                    {episode.data.relationships.doctor.data.attributes.fullname}
+                    {getProfessionalFullname(episode.data)}
                 </span>
             </li>
             <li className="flex flex-col">
