@@ -387,6 +387,16 @@ const getProfessionalFullname = (caseItem) => {
     return "?";
 };
 
+const extractExaminations = (episode) => {
+    // For some inconciviable reasion the exminations field is stored in the
+    // diagnosis list. Dont ask me why. The database designer thought this was
+    // the best way to do it.
+    console.log(episode);
+    return episode.data.relationships.diagnoses.data
+        .map((diagnosis) => diagnosis.attributes.on_examination)
+        .filter((exam) => exam !== null);
+};
+
 export {
     apiServer,
     getActiveTab,
@@ -401,4 +411,5 @@ export {
     getAllPaginatedResources,
     getResource,
     getProfessionalFullname,
+    extractExaminations,
 };

@@ -2,13 +2,18 @@ import React, { useEffect, useState } from "react";
 // import { JSONTree } from "react-json-tree";
 import { SquareArrowOutUpRight } from "lucide-react";
 
-import { getEpisodeDetail, getProfessionalFullname } from "../api/VinaviApi";
+import {
+    extractExaminations,
+    getEpisodeDetail,
+    getProfessionalFullname,
+} from "../api/VinaviApi";
 import NoteList from "./note-list";
 import DiagnosisList from "./diagnosis-list";
 import PrescriptionList from "./prescription-list";
 import LoadingSpinner from "./loading-spinner";
 import ErrorMessage from "./error-message";
 import ServicesList from "./services-list";
+import ExaminationList from "./examination-list";
 
 function EpisodeInformation({ episode }) {
     if (!episode) {
@@ -56,6 +61,8 @@ export default function EpisodeDetailComponent({
     const [error, setError] = useState(null);
     const [isLoading, setLoading] = useState(false);
 
+    const [examinations, setExaminations] = useState([]);
+
     useEffect(() => {
         if (episodeId === null) {
             return;
@@ -71,6 +78,7 @@ export default function EpisodeDetailComponent({
                 console.log(loadedEpisode);
 
                 setEpisode(loadedEpisode);
+                setExaminations(extractExaminations(loadedEpisode));
             } catch (error) {
                 setError(error);
             } finally {
@@ -122,6 +130,7 @@ export default function EpisodeDetailComponent({
                     diagnoses={episode.data.relationships.diagnoses.data}
                 />
                 <NoteList notes={episode.data.relationships.notes.data} />
+                <ExaminationList examinations={examinations} />
                 <ServicesList
                     services={
                         episode.data.relationships["requested-services"].data
