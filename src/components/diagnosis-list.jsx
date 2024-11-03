@@ -2,7 +2,7 @@ import React from "react";
 
 export default function DiagnosisList({ diagnoses }) {
     if (diagnoses.length < 1) {
-        return <div id="notes"></div>;
+        return <div id="diagnoses"></div>;
     }
 
     return (
