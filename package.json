@@ -1,6 +1,6 @@
 {
   "name": "vinavi-chrome-extension",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Chrome extension to more conveniently browse episodes on Vinavi",
   "scripts": {
     "start": "node scripts/devserver.js",
@@ -13,8 +13,7 @@
     "lucide-react": "^0.361.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-json-tree": "^0.18.0",
-    "xlsx": "^0.18.5"
+    "react-json-tree": "^0.18.0"
   },
   "devDependencies": {
     "@babel/core": "^7.23.9",

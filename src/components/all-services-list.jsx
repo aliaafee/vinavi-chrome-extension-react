@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import { getResource } from "../api/VinaviApi";
 import { JSONTree } from "react-json-tree";
-import * as XLSX from "xlsx";
+// import * as XLSX from "xlsx";
 import LoadingSpinner from "./loading-spinner";
 import ErrorMessage from "./error-message";
 
@@ -88,36 +88,37 @@ export default function AllServicesList({ className = "", style = {} }) {
     };
 
     const handleDownload = () => {
-        const workbook = XLSX.utils.book_new();
-        const worksheet = XLSX.utils.json_to_sheet(allServices);
+        alert("Not Implemented, vulnerability in XLSX library.");
+        // const workbook = XLSX.utils.book_new();
+        // const worksheet = XLSX.utils.json_to_sheet(allServices);
 
-        // Append the worksheet to the workbook
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Services");
+        // // Append the worksheet to the workbook
+        // XLSX.utils.book_append_sheet(workbook, worksheet, "Services");
 
-        // Generate a binary string representation of the workbook
-        const wbout = XLSX.write(workbook, {
-            bookType: "xlsx",
-            type: "binary",
-        });
+        // // Generate a binary string representation of the workbook
+        // const wbout = XLSX.write(workbook, {
+        //     bookType: "xlsx",
+        //     type: "binary",
+        // });
 
-        // Convert binary string to array buffer
-        const buf = new ArrayBuffer(wbout.length);
-        const view = new Uint8Array(buf);
-        for (let i = 0; i < wbout.length; i++) {
-            view[i] = wbout.charCodeAt(i) & 0xff;
-        }
+        // // Convert binary string to array buffer
+        // const buf = new ArrayBuffer(wbout.length);
+        // const view = new Uint8Array(buf);
+        // for (let i = 0; i < wbout.length; i++) {
+        //     view[i] = wbout.charCodeAt(i) & 0xff;
+        // }
 
-        // Create a blob from the array buffer
-        const blob = new Blob([buf], { type: "application/octet-stream" });
+        // // Create a blob from the array buffer
+        // const blob = new Blob([buf], { type: "application/octet-stream" });
 
-        // Create a link element and trigger a download
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "services.xlsx";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        // // Create a link element and trigger a download
+        // const url = window.URL.createObjectURL(blob);
+        // const a = document.createElement("a");
+        // a.href = url;
+        // a.download = "services.xlsx";
+        // document.body.appendChild(a);
+        // a.click();
+        // document.body.removeChild(a);
     };
 
     // if (isLoading) {
