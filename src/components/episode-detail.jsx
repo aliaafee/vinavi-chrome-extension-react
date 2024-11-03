@@ -67,6 +67,9 @@ export default function EpisodeDetailComponent({
                 setLoading(true);
 
                 const loadedEpisode = await getEpisodeDetail(episodeId);
+
+                console.log(loadedEpisode);
+
                 setEpisode(loadedEpisode);
             } catch (error) {
                 setError(error);

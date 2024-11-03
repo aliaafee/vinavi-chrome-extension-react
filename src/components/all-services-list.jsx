@@ -72,8 +72,6 @@ export default function AllServicesList({ className = "", style = {} }) {
                 setAllServices(list);
                 setServicesCount(list.length);
             } while (services.meta.last_page > services.meta.current_page);
-
-            console.log(list);
         } catch (error) {
             setError(error);
         } finally {

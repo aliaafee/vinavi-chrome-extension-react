@@ -29,6 +29,8 @@ export default function CasesList({
 
                 const loadedCases = await getAllCases(patientId);
 
+                console.log(loadedCases);
+
                 setCases(loadedCases.data);
                 setFilteredCases(loadedCases.data);
             } catch (error) {

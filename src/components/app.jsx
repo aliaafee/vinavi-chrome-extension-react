@@ -100,7 +100,6 @@ export default function App({ children }) {
     }
 
     // if (!serviceProvider) {
-    //     console.log(Object.entries(user.serviceProviders));
     //     return (
     //         <SelectedServiceProviderForm
     //             serviceProviders={user.serviceProviders}

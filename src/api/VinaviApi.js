@@ -373,7 +373,6 @@ const titleFromProfessionalType = (professionalType) => {
 };
 
 const getProfessionalFullname = (caseItem) => {
-    console.log(caseItem);
     if (
         "relationships" in caseItem &&
         "doctor" in caseItem.relationships &&
@@ -385,7 +384,6 @@ const getProfessionalFullname = (caseItem) => {
             caseItem.relationships.doctor.data.attributes.professional_type
         )} ${caseItem.relationships.doctor.data.attributes.fullname}`;
     }
-    console.log(caseItem);
     return "?";
 };
 
