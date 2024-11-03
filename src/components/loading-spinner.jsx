@@ -3,7 +3,7 @@ import React from "react";
 export default function LoadingSpinner({ size = "large", message }) {
     if (size === "small") {
         return (
-            <div className="w-full h-full flex flex-col items-center justify-center">
+            <div className="h-full flex flex-col items-center justify-center">
                 <div className="animate-spin w-4 h-4 rounded-full border-2 border-grey-200 border-t-black border-solid"></div>
             </div>
         );

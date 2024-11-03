@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 
-import { getAllCases, getProfessionalFullname } from "../api/VinaviApi";
+import {
+    getAllCases,
+    getCases,
+    getProfessionalFullname,
+} from "../api/VinaviApi";
 import LoadingSpinner from "./loading-spinner";
 import ErrorMessage from "./error-message";
 
@@ -14,6 +18,7 @@ export default function CasesList({
     const [filterText, setFilterText] = useState("");
     const [cases, setCases] = useState(null);
     const [filteredCases, setFilteredCases] = useState(null);
+    const [casesCount, setCasesCount] = useState(0);
     const [error, setError] = useState(null);
     const [isLoading, setLoading] = useState(false);
 
@@ -27,12 +32,22 @@ export default function CasesList({
             try {
                 setLoading(true);
 
-                const loadedCases = await getAllCases(patientId);
+                let page = 0;
+                let allCases = [];
+                let loadedCases;
 
-                console.log(loadedCases);
+                do {
+                    page = page + 1;
 
-                setCases(loadedCases.data);
-                setFilteredCases(loadedCases.data);
+                    loadedCases = await getCases(patientId, page);
+                    allCases.push(...loadedCases.data);
+
+                    setCases(allCases);
+                    setFilteredCases(allCases);
+                    setCasesCount(allCases.length);
+                } while (
+                    loadedCases.meta.last_page > loadedCases.meta.current_page
+                );
             } catch (error) {
                 setError(error);
             } finally {
@@ -85,7 +100,7 @@ export default function CasesList({
         setFilteredCases(newFilteredCases);
     }, [filterText]);
 
-    if (isLoading) {
+    if (isLoading && !filteredCases) {
         return (
             <div className={className} style={style}>
                 <LoadingSpinner />
@@ -118,33 +133,47 @@ export default function CasesList({
             <div className="px-1.5 pt-1.5 pb-0 font-bold bg-gray-300">
                 Episodes
             </div>
+
             <div className="flex flex-col p-1.5 bg-gray-300">
-                <input
-                    placeholder="Filter"
-                    value={filterText}
-                    onChange={(event) => {
-                        setFilterText(event.target.value);
-                    }}
-                    className="p-1.5 rounded-md border-0 focus:outline-2 focus:outline-red-300"
-                />
+                {isLoading ? (
+                    <div className="flex gap-1 p-1.5 rounded-md border-0 bg-white text-gray-500">
+                        <LoadingSpinner size="small" />{" "}
+                        <div>Loading... {casesCount}</div>
+                    </div>
+                ) : (
+                    <input
+                        placeholder="Filter"
+                        value={filterText}
+                        onChange={(event) => {
+                            setFilterText(event.target.value);
+                        }}
+                        className="p-1.5 rounded-md border-0 focus:outline-2 focus:outline-red-300"
+                    />
+                )}
             </div>
             <div className="overflow-y-auto overflow-x-hidden ">
                 <ul className="list-none m-0 p-1.5 flex flex-col gap-1.5">
-                    {filteredCases.map((caseItem, caseIndex) =>
-                        caseItem.relationships.episodes.data.map(
-                            (episode, episodeIndex) => (
-                                <li
-                                    key={episodeIndex}
-                                    onClick={() => onEpisodeSelected(episode)}
-                                    className={liClassName(episode.id)}
-                                >
-                                    <div className="rounded-t-md px-1.5 pt-1.5">
-                                        {caseItem.attributes.created_at}
-                                    </div>
-                                    <div className="rounded-b-md font-bold px-1.5 pb-1.5">
-                                        {getProfessionalFullname(caseItem)}
-                                    </div>
-                                </li>
+                    {!filteredCases ? (
+                        <div className={className}>No Episodes</div>
+                    ) : (
+                        filteredCases.map((caseItem, caseIndex) =>
+                            caseItem.relationships.episodes.data.map(
+                                (episode, episodeIndex) => (
+                                    <li
+                                        key={episodeIndex}
+                                        onClick={() =>
+                                            onEpisodeSelected(episode)
+                                        }
+                                        className={liClassName(episode.id)}
+                                    >
+                                        <div className="rounded-t-md px-1.5 pt-1.5">
+                                            {caseItem.attributes.created_at}
+                                        </div>
+                                        <div className="rounded-b-md font-bold px-1.5 pb-1.5">
+                                            {getProfessionalFullname(caseItem)}
+                                        </div>
+                                    </li>
+                                )
                             )
                         )
                     )}
