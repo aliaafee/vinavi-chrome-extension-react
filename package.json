@@ -1,6 +1,6 @@
 {
   "name": "vinavi-chrome-extension",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Chrome extension to more conveniently browse episodes on Vinavi",
   "scripts": {
     "start": "node scripts/devserver.js",
