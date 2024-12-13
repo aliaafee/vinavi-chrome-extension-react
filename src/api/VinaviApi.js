@@ -6,6 +6,19 @@ function getApiUrl() {
     return `${apiServer}${apiPath}`;
 }
 
+async function vinaviLogin() {
+    try {
+        const response = await fetch(apiServer);
+        if (!response.ok) {
+            throw new Error(`Response not ok, ${response.status}`);
+        }
+    } catch (error) {
+        throw new Error(`Error, ${error.message}`, {
+            cause: null,
+        });
+    }
+}
+
 async function getResource(url) {
     try {
         const response = await fetch(url);
@@ -355,7 +368,7 @@ async function getAllCases(patientId) {
 //     }
 // }
 
-async function setServiceProvider(serviceProviderId) {
+async function setCurrentServiceProvider(serviceProviderId) {
     if (!serviceProviderId) {
         throw new Error("No valid service provider Id Given");
     }
@@ -407,9 +420,10 @@ export {
     searchPatientByNationalIdentification,
     getAuthenticatedUser,
     getServiceProvider,
-    setServiceProvider,
+    setCurrentServiceProvider,
     getAllPaginatedResources,
     getResource,
     getProfessionalFullname,
     extractExaminations,
+    vinaviLogin,
 };
