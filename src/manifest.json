@@ -5,6 +5,7 @@
     "content_scripts": [
         {
             "matches": [
+                "https://vinavi.aasandha.mv/*",
                 "http://hinai.igmh.gov.mv/*"
             ],
             "js": [
