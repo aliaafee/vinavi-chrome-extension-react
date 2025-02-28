@@ -304,8 +304,10 @@ async function searchPatientByNationalIdentification(nationalIdentification) {
 
 async function getAuthenticatedUser() {
     try {
-        return await getResource(
-            `${getApiUrl()}/users/authenticated?include=employee,professional.service-providers,permissions,roles.permissions`
+        return processResource(
+            await getResource(
+                `${getApiUrl()}/users/authenticated?include=employee,professional.service-providers,permissions,roles.permissions`
+            )
         );
     } catch (error) {
         throw new Error(`Could not get authenticated user, ${error.message}`, {

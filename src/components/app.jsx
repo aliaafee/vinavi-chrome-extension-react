@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import dayjs from "dayjs";
 
 import {
     getAuthenticatedUser,
@@ -11,20 +12,24 @@ import AuthContext from "./auth-context";
 import ErrorMessage from "./error-message";
 import LoadingSpinner from "./loading-spinner";
 import { ActiveTabContextProvider } from "./active-tab-context";
-import { User } from "lucide-react";
+import { AlertTriangle, InfoIcon, User } from "lucide-react";
 
 const processUser = (user) => {
     return {
         ...user,
-        serviceProviders: user.included
-            .filter((included) => included.type === "service-providers")
-            .reduce(
+        serviceProviders:
+            user.data.relationships.professional.data.relationships[
+                "service-providers"
+            ].data.reduce(
                 (a, serviceProvider) => ({
                     ...a,
                     [serviceProvider.id]: serviceProvider,
                 }),
                 {}
             ),
+        expiration_date: dayjs(
+            user.data.relationships.professional.data.attributes.expiration_date
+        ),
     };
 };
 
@@ -151,15 +156,51 @@ export default function App({ children }) {
         );
     }
 
+    const time_to_expiration = user.expiration_date.diff(dayjs(), "day");
+
     return (
         <ActiveTabContextProvider>
             <AuthContext.Provider
                 value={{ user: user, serviceProvider: serviceProvider }}
             >
                 <div className="items-center top-0 left-0 fixed flex justify-end w-full gap-4">
-                    <div className="mr-28 flex items-center gap-1.5 px-1.5 py-1.5 rounded-b-md bg-gray-300">
-                        <User size={16} color="black" />
-                        {user.data.attributes.full_name}
+                    <div className="mr-28 px-1.5 py-1.5 flex flex-col items-start rounded-b-md bg-gray-300">
+                        <div className="flex items-center gap-1.5">
+                            <User size={16} color="black" />
+                            {user.data.attributes.full_name}
+                        </div>
+                        {time_to_expiration < 60 ? (
+                            <div className="flex items-center gap-1.5 ">
+                                {time_to_expiration <= 0 ? (
+                                    <>
+                                        <AlertTriangle
+                                            size={16}
+                                            color="red"
+                                            className="animate-bounce"
+                                        />
+                                        <span className="text-red-600">
+                                            License Expired on{" "}
+                                            {user.expiration_date.format(
+                                                "YYYY-MM-DD"
+                                            )}
+                                        </span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <InfoIcon size={16} color="red" />
+                                        License expires in {
+                                            time_to_expiration
+                                        }{" "}
+                                        days, on{" "}
+                                        {user.expiration_date.format(
+                                            "YYYY-MM-DD"
+                                        )}
+                                    </>
+                                )}
+                            </div>
+                        ) : (
+                            <></>
+                        )}
                     </div>
                 </div>
                 {children}
