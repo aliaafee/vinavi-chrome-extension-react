@@ -153,7 +153,7 @@ export default function PatientSearch() {
                 return currentPatient.data.id;
             }
         } catch (error) {
-            alert(error.message);
+            console.log(error.message);
         }
 
         //Next try to get the patientid from the url of vinavi
