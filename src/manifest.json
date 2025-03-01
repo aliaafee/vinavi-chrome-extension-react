@@ -2,10 +2,12 @@
     "manifest_version": 3,
     "name": "Vinavi Chrome Extension",
     "description": "Chrome extension to more conveniently browse episodes on Vinavi",
+    "host_permissions": [
+        "https://vinavi.aasandha.mv/"
+    ],
     "content_scripts": [
         {
             "matches": [
-                "https://vinavi.aasandha.mv/*",
                 "http://hinai.igmh.gov.mv/*"
             ],
             "js": [
