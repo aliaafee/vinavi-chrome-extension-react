@@ -141,19 +141,37 @@ export default function PatientSearch() {
         // Try to look for patient national id in tab of the emr
         setStatusMessage("Checking Page Content");
         try {
-            const patientNationalId = await chrome.tabs.sendMessage(tabid, {
-                action: "getCurrentPatientNationalId",
+            const injectionResult = await chrome.scripting.executeScript({
+                target: { tabId: tabid },
+                func: () => {
+                    if (!window.location.href.includes("hinai")) {
+                        return null;
+                    }
+
+                    const infoElement = document.getElementById("patientFlag");
+                    if (!infoElement) {
+                        return null;
+                    }
+
+                    const nidElement = infoElement.childNodes[3];
+                    const nid = nidElement.innerText;
+
+                    return nid;
+                },
             });
 
-            if (patientNationalId) {
-                const currentPatient =
-                    await searchPatientByNationalIdentification(
-                        patientNationalId
-                    );
-                return currentPatient.data.id;
+            if (injectionResult) {
+                const patientNationalId = injectionResult[0].result;
+                if (patientNationalId) {
+                    const currentPatient =
+                        await searchPatientByNationalIdentification(
+                            patientNationalId
+                        );
+                    return currentPatient.data.id;
+                }
             }
         } catch (error) {
-            console.log(error.message);
+            return null;
         }
 
         //Next try to get the patientid from the url of vinavi
@@ -169,6 +187,7 @@ export default function PatientSearch() {
         } catch (error) {
             return null;
         }
+
         return null;
     };
 

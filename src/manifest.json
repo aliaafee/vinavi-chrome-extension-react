@@ -5,16 +5,6 @@
     "host_permissions": [
         "https://vinavi.aasandha.mv/"
     ],
-    "content_scripts": [
-        {
-            "matches": [
-                "https://hinai.igmh.gov.mv/*"
-            ],
-            "js": [
-                "content.js"
-            ]
-        }
-    ],
     "action": {
         "default_title": "View Vinavi Episodes for Current Patient",
         "default_popup": "popup.html",
@@ -35,6 +25,8 @@
         "service_worker": "background.js"
     },
     "permissions": [
-        "storage"
+        "storage",
+        "scripting",
+        "activeTab"
     ]
 }
