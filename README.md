@@ -6,7 +6,7 @@
 
 ## Installation
 
-* Get from the Chrome Web Store [Vinavi Chrome Extension](https://chrome.google.com/webstore/detail/bfdaifndonbgknbjioghkpcpapfdmjgh)
+* Not available on Chrome Web Store. Install manually at your own risk.
 
 
 
@@ -15,6 +15,7 @@
 ### Download
 
 * Download the latest release.
+* Enable Developer Mode and add the unpacked extension.
 * Alternatively clone the repo and build from source.
 
 ### Build from source
